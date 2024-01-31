@@ -1,4 +1,5 @@
 # ie0217-proyecto
+# Anthony Calvo Garcia, C11433; Jesy Rivera Duarte, C06512; Sebastian Bonilla Vega, C01263.
 
 # Informacion General Prestamos
 
@@ -6,7 +7,7 @@
 
 En los prestamos personales, se recibe una suma de dinero por parte de una entidad financiera, sin embargo, esta cantidad debe de ser reembolsada en un periodo determinado junto con un porcertanje adicional que seran los intereses generados. Este dinero puede ser utilizado para satisfacer necesidades personales del tipo gastos medicos, educativosm adquisicion de bienes y otros propositos. [1]
 
-El uso que se le va a dar a este capital es un factor crucial al tomar la decision de solicitar un prestamo. Se debe de preveer la necesidad que va a cubir, este puede ser destinado a:
+El uso que se le va a dar a este capital es un factor crucial al tomar la decision de solicitar un prestamo. Se debe de preveer la necesidad que va a cubrir, este puede ser destinado a:
 
 1. Gastos medicos como emergencias, en los cuales, se puede utilizar para abordar imprevistoso como tratamientos dentales de urgencia o gastos veterinarios inesperados en una mascota. [1]
 
@@ -14,17 +15,17 @@ El uso que se le va a dar a este capital es un factor crucial al tomar la decisi
 
 3. Consumo como solventar las necesidades cotidianas,ya sea, reemplazar una computadora averiada o comprar un celular nuevo. [1]
 
-# Prestamo Prendario
+## Prestamo Prendario
 
 Este prestamo es una forma de financiamiento en la cual la persona ofrece una prenda como garantia o colateral para obtener un prestamo, generalmente es un bien mueble como vehiculos, motocicletas, entre otros. [2]
 
 Por tanto, el bien ofrecido funciona como garantia hasta que se cancele el prestamo, son adquiridos principalmente para la compra de vehiculos nuevos o usados. El bien adquirido queda prendado a favor de la entidad que brinda el financiamiento. [2]
 
-# Prestamo Hipotecario
+## Prestamo Hipotecario
 
 El prestamo hipotecario es un prestamo con garantia hipotecaria, es decir, un inmueble es utilizado como garantia, estos creditos son adquiridos para la compra de lotes, viviendas, entre otros. [3]
 
-# Comisiones
+## Comisiones
 
 Las comisiones son un monto que cobra la entidad financiera por la prestacion de servicios, se cobra en procentaje. Entre las comisiones que se podrian cobrar se encuentran: [4]
 
@@ -32,7 +33,7 @@ Las comisiones son un monto que cobra la entidad financiera por la prestacion de
 
 - **Comision por amortizacion de capital** esta se aplica cuando el cliente quiere cancelar el prestamo antes del plazo que se establecio. [4]
 
-# Sistema de las entidades financieras
+## Sistema de las entidades financieras
 
 El sistema se compone de distintos elementos que el usario debe de tomar en cuenta: [5]
 
@@ -42,7 +43,7 @@ El sistema se compone de distintos elementos que el usario debe de tomar en cuen
 
 - **Esquema de pago**: esto se refiere a la manera en que se calucla la mensualidad, existen distintos tipos de pago, los mas frecuentes son pagos a tasa fija y pagos a tasa variable. [5]
 
-# Certificado de Depósito a Plazo
+## Certificado de Depósito a Plazo
 
 Mediante un Certificado de Depósito a Plazo se realiza un depósito de dinero por un periodo de tiempo determinado, sobre el cual, la entidad financiera pagará una compensación económica, denominada interés, la cual se estima en función del tiempo del depósito.
 Es importante mencionar que durante el plazo del certificado, no se puede disponer del dinero depositado. Sin embargo, dependiendo del tipo de certificado, existen algunas opciones que podrían utilizarse para disponer del dinero en caso de ser requerido.
@@ -96,6 +97,161 @@ Está sometido a los cambios en las tasas de interés.
 En este tipo de interés, durante los primeros años de vida del préstamo la tasa de interés es fija y el resto de tiempo, hasta su terminación, es variable.
 
 Durante los primeros años de vida del préstamo la tasa de interés es fija y el resto de tiempo es variable.[7]
+
+# Diseño
+Una vez concluida con la parte investigativa, se procede con el diseño del sistema para resolver el problema asignado. Primero, si se fija en los requisitos escenciales que necesita el sistema, se tiene que:
+
+```
+-1. Modalidad de operación: El sistema debe iniciar consultando si se va a utilizar en modalidad de atención a clientes o para obtener información general sobre préstamos bancarios.
+```
+Entonces en este caso, como se pide escoger entre **2** opciones, estas siendo **modo atencion** y **modo informacion** se podria implementar a traves de un menu, como ya se ha visto en clase, donde a traves de la funcionalidad **case** se puede escoger entre una y otra, e inclusivamente solo salir sin hacer nada.
+
+```
+-2. Información general: Se deben desplegar las opciones predefinidas para préstamos personales, prendarios e hipotecarios, así como la opción de generar una tabla de pagos esperados para la opción elegida, donde el monto del préstamo es ingresado por el usuario. Además se debe dar la opción de obtener la tabla mediante valores personalizados de monto, cantidad de cuotas y la tasa de interés.
+```
+Segun lo que se pide en la parte 2, se puede afimar que esta parte se puede implementar una vez seleccionada la opcion que corresponda a **modo informacion**. Entonces, si se selecciona esta informacion se puede llevar a otro submenu, donde hay opciones definidas en el sistema. Ejemplo, selecciono el modo informacion, y despues puedo sleccionar entre "INFO:Prestamo Personal", "INFO:Prestamo Prendario" y "INFO:Prestamo Hipotecario", donde cada una de esas opciones va a generar una tabla de pagos sugeridos o esperados; en plan escogiste esta opcion, te toca pagar de este modo. Cada tabla va a tener los valores definidos de monto, cuotas y tasa de interes.
+
+```
+-3. Cuentas bancarias: Un cliente puede poseer hasta dos cuentas bancarias, una en colones y otra en dólares, destinadas a gestionar sus ahorros con la entidad bancaria. Así como certificados de depósito a plazo (CDP).
+
+```
+
+Para gestionar cuentas, se puede abrir otro submenu despues de haber escogido la opcion **modo atencion**. Dentro de este menu, pueden haber opciones como:
+- Configurar Cuenta
+    + Agregar Cuenta
+        - Cuenta en Dolares
+        + Cuenta en Colones
+    + Agregar Deposito CDP
++ Ver Cuenta
+    - Cuenta en Dolares
+    + Cuenta en Colones
+    + Deposito CDP
+
+Entonces, la idea seria que si se selecciona **Configurar Cuenta**, se de la opcion entre agregar una cuenta en colones y otra en dolares, aplicando la logica correspondiente para asegurar que sean una de cada una, y no dos en colones, aunque esto esta tentativo a cambio, y si se quiere agregar un deposito. Sino, se selecciona **Ver cuenta**, donde solo se imprime lo que se selecciona. Ejemplo, si selecciono Cuenta en Dolares, se imprime la cuenta en dolares junto a toda la informacion adicional, si se selecciona Deposito CDP, se puede ver el deposito que se hizo. (Posiblemente se pueda mas de un deposito, pero hay que consultar eso.) Cada opcion va a tener su respectiva informacion y logica por detras, sera implementado mediante las tecnicas de OOP, uso de clases y manejo de memoria dinamica observadas en clase.
+
+```
+-4. Operaciones disponibles: Los clientes tienen la capacidad de realizar diversas operaciones, tales como depósitos, retiros, transferencias entre cuentas dirigidas a otros clientes, abonos a préstamos tanto propios como de otras personas, etc.
+
+```
+Como se habla de operaciones, tiene sentido que esta opcion salga despues de seleccionar **modo atencion**. Dentro de modo atencion, ahora habria un submenu donde se puede seleccionar entre **Cuentas Bancarias** y **Operaciones dentro su cuenta.** Dentro de **Operaciones dentro su cuenta,** se habilitaria la opcion de realizar depositos, retiros, transferencias entre cuentas, abonos a prestamos, entre otros. Un ejemplo, seria tener una clase llamada OperacionesCuenta, donde dentro de ella estan los metodos Transferencia,Abono, Deposito, Retiro y entre otros, cada uno con su respectiva logica.
+
+```
+-5. Registro de transacciones: El sistema debe mantener un registro detallado de todas las transacciones realizadas, garantizando un seguimiento preciso de las operaciones efectuadas.
+
+
+```
+Esta parte, se piensa que este mas en el "back end", donde el cliente no deberia verlo. La diferencia es que se implenta sin estar imprimiendolo en pantalla. Se puede imprimir para ir observando que todo este funcionando adecuadamente y ver la tabla de registro, pero la idea es que sea algo interno y no a la vista del cliente.
+
+ ```
+-6. Identificación de clientes: Cada cliente será identificado mediante un número de identificación único, el cual estará limitado a un número decimal entre 0 y 999999999.
+
+```
+Para esta parte, se puede hacer un menu mas grande, antes de **modo atencion** y **modo informacion**, donde se le de la bienvenida al usuario al abrir la aplicacion. Puede ser implementado de este modo:
+
++ Obtener identificacion
+- Salir
+
+Si se presiona **obtener identificacion**, se genera un token random entre **0 y 999999999**, que sea unico y se guarde para posterior uso. Luego, se sigue con el resto del menu. Como por ejemplo:
+
+- "Bienvenido! Su token es 1029310."
+    - Modo Informacion
+    - Modo Atencion
+ ```
+7. Préstamos asociados: Los clientes pueden tener préstamos asociados, ya sea en colones o en dólares, cada uno con características específicas como la tasa de interés, el periodo en meses y la cuota mensual.
+```
+Para esta parte, en el menu **modo atencion**, debe ir otra opcion llamada **Sacar Prestamo**, donde probablemte se cree una clase con ese nombre:
+- Configurar Cuenta
+    + Agregar Cuenta
+        - Cuenta en Dolares
+        + Cuenta en Colones
+    + Agregar Deposito CDP
++ Ver Cuenta
+    - Cuenta en Dolares
+    + Cuenta en Colones
+    + Deposito CDP
++ Prestamos
+
+Donde, en la opcion **prestamo** se podria implementar lo siguiente:
+- Configurar Cuenta
+    + Agregar Cuenta
+        - Cuenta en Dolares
+        + Cuenta en Colones
+    + Agregar Deposito CDP
++ Ver Cuenta
+    - Cuenta en Dolares
+    + Cuenta en Colones
+    + Deposito CDP
++ Prestamos
+    - Sacar prestamo
+        * Prestamo en Dolares
+        * Prestamo en Colones
+Donde las opciones **Prestamo en dolares y prestamo en colones** imprimiran sus características específicas como la tasa de interés, el periodo en meses y la cuota mensual, y ademas se le pedira al usuario que digite la cantidad de dinero que quiere sacar a prestamo (con su validaciones, no va a ser que le pidamos dinero y escriba "hola" y se tome como valido) y se guarde la cantidad de dinero que saco.
+
+ ```
+8. Reporte de préstamos: Los clientes pueden solicitar un reporte de sus préstamos. El sistema debe generar un archivo de texto que detalle las cuotas pagadas, desglosando el aporte al capital y los intereses abonados hasta el momento. Este reporte puede presentarse en forma tabular.
+
+ ```
+Se podria extender le menu de prestamos de este modo:
+ + Prestamos
+    - Sacar prestamo
+        * Prestamo en Dolares
+        * Prestamo en Colones
+    - Pagar Prestamo
+        * Pagar prestamo en Dolares
+        * Pagar prestamo en Colones
+    - Generar informe (.txt)
+Donde, al seleccionar **Pagar prestamo** ya sea en dolares o en colones, se le pida al usuario que ingrese el dinero con el que va a pagar, como cada usuario tiene su token y cuenta especifica, se debe hacer que salga el dinero de esa cuenta y vaya a pagar el prestamo. Luego, al seleccionar **generar informe**, se crea un .txt donde van a estar las cuotas pagadas, desglosando el aporte al capital y los intereses abonados hasta el momento.
+
+
+```
+
+9. Almacenamiento en archivos de texto: Para evitar el uso de bases de datos, toda la
+información, incluyendo transacciones y detalles de préstamos, se podrá consultar y
+almacenar en archivos de texto con un formato libre.
+
+```
+Consultar sobre esta parte, no me queda claro si no se pueden imprimir cosas en la terminal y todo debe salir estrictamente en archivos .txt, o si se puede hacer una mezcla de ambas, o algo asi. Consultarle al profe.
+
+Entonces, como se ha estado haciendo, se buscaria un diseño asi:
+
+Bienvenido al Banco!
++ Obtener identificacion
+- Salir
+--------------------------
+- "Token obtenido:1029310."
+    - Modo Informacion
+        * INFO:Prestamo Personal
+            + (Imprime tasas de interes)
+        * INFO:Prestamo Prendario 
+            + (Imprime tasas de interes)
+        * INFO:Prestamo Hipotecario
+            + (Imprime tasas de interes)
+
+    - Modo Atencion
+        + Agregar Cuenta
+            * Cuenta en Dolares
+            * Cuenta en Colones
+            * Agregar Deposito CDP
+        + Ver Cuenta
+            * Cuenta en Dolares
+            * Cuenta en Colones
+            * Deposito CDP
+        + Prestamos
+            * Sacar prestamo
+                - Prestamo en Dolares
+                    + Prestamo Personal (con su respectiva tasa y tiempo)
+                    + Prestamo Prendario (con su respectiva tasa y tiempo)
+                    + Prestamo Hipotecario (con su respectiva tasa y tiempo)
+                - Prestamo en Colones
+                    + Prestamo Personal (con su respectiva tasa y tiempo)
+                    + Prestamo Prendario (con su respectiva tasa y tiempo)
+                    + Prestamo Hipotecario (con su respectiva tasa y tiempo)
+            * Pagar Prestamo
+                + Escoja cuantas cuotas
+                + Pagar prestamo en Dolares
+                + Pagar prestamo en Colones
+            * Generar informe (.txt)
+
 
 
 
