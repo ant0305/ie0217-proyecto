@@ -252,8 +252,7 @@ Bienvenido al Banco!
                 + Pagar prestamo en Colones
             * Generar informe (.txt)
 
-
-
+![Diagrama de flujo propuesto del codigo diseñado, tentativo a cambio](https://github.com/ant0305/ie0217-proyecto/blob/8e1853c9efb83f5f0ba7363f14c783a35bbf8010/Diagrama.png)
 
 [^1] : https://www.bncr.fi.cr/3-detalles-que-no-pod%C3%A9s-pasar-por-alto-antes-de-pedir-un-pr%C3%A9stamo-personal#:~:text=Un%20pr%C3%A9stamo%20personal%20es%20una,porcentaje%20adicional%20correspondiente%20a%20intereses.
 
