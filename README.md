@@ -94,9 +94,7 @@ Se actualiza y se revisa su cantidad en los plazos establecidos por la entidad f
 Está sometido a los cambios en las tasas de interés.
 
 ### Interés mixto:
-En este tipo de interés, durante los primeros años de vida del préstamo la tasa de interés es fija y el resto de tiempo, hasta su terminación, es variable.
-
-Durante los primeros años de vida del préstamo la tasa de interés es fija y el resto de tiempo es variable.[7]
+En este tipo de interés, durante los primeros años de vida del préstamo la tasa de interés es fija y el resto de tiempo, hasta su terminación, es variable.[7]
 
 # Diseño
 Una vez concluida con la parte investigativa, se procede con el diseño del sistema para resolver el problema asignado. Primero, si se fija en los requisitos escenciales que necesita el sistema, se tiene que:
