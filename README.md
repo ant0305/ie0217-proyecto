@@ -205,12 +205,10 @@ Donde, al seleccionar **Pagar prestamo** ya sea en dolares o en colones, se le p
 
 ```
 
-9. Almacenamiento en archivos de texto: Para evitar el uso de bases de datos, toda la
-información, incluyendo transacciones y detalles de préstamos, se podrá consultar y
-almacenar en archivos de texto con un formato libre.
+9. Almacenamiento en archivos de texto: Para evitar el uso de bases de datos, toda la información, incluyendo transacciones y detalles de préstamos, se podrá consultar y almacenar en archivos de texto con un formato libre.
 
 ```
-Consultar sobre esta parte, no me queda claro si no se pueden imprimir cosas en la terminal y todo debe salir estrictamente en archivos .txt, o si se puede hacer una mezcla de ambas, o algo asi. Consultarle al profe.
+En esta parte, se va a usar como "memoria". Si un usuario llega y digita sus datos, y luego se cierra y abre la palicacion, esos datos van a quedar guardados en un .txt, para que no se tengn que estar haciendo manualmente cada vez que se inicie el programa. Tambien, se puede usar para pre llenar los datos del banco.
 
 Entonces, como se ha estado haciendo, se buscaria un diseño asi:
 
@@ -265,13 +263,19 @@ $$ Cuota = { [20000*{0.14\over12}]\over{1-[1+{0.14\over12}]^{-24}} }= 960.26 $$
 $$ Interes = {(2000*0.14)\over12} = 233.33$$
 
 - Para la deuda despues de cada pago:
-$$ Deuda= 960.26-233.33= 726.93$$
+$$ Deuda=960.26-233.33=726.93$$
 - Entonces, el monto restante despues de cada pago:
 
 $$ Restante=20000-726.93=19273.07$$
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+Se puede pasar de colaras a colones, de colones a dolares.
 
+Fuente principal de efectivo
+
+
+
+cadada uno hace su parte en la presentacion de pp o donde sea
 
 
 [^1] : https://www.bncr.fi.cr/3-detalles-que-no-pod%C3%A9s-pasar-por-alto-antes-de-pedir-un-pr%C3%A9stamo-personal#:~:text=Un%20pr%C3%A9stamo%20personal%20es%20una,porcentaje%20adicional%20correspondiente%20a%20intereses.
