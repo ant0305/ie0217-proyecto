@@ -252,21 +252,30 @@ Bienvenido al Banco!
 ## Formulas a utilizar:
 - Cuotas mensuales:
     + Interes de 14%
-    + Importe del prestamo: 20000, por ejemplo
-    + Tiempo de amortizacion: 24 meses, por ejemplo
+    + Importe del préstamo: 20000, por ejemplo
+    + Tiempo de amortización: 24 meses, por ejemplo
+
 Cada cuota sería:
-$$ Cuota = { [20000*{0.14\over12}]\over{1-[1+{0.14\over12}]^{-24}} }= 960.26 $$
 
-- Para el interes:
-$$ Interes = {(2000*0.14)\over12} = 233.33$$
+$$ Cuota = \frac{{20000 \cdot \frac{0.14}{12}}}{{1 - (1 + \frac{0.14}{12})^{-24}}} = 960.26 $$
 
-- Para la deuda despues de cada pago:
-$$ Deuda=960.26-233.33=726.93$$
-- Entonces, el monto restante despues de cada pago:
+- Para el interés:
 
-$$ Restante=20000-726.93=19273.07$$
+$$ Interes = \frac{{20000 \cdot 0.14}}{12} = 233.33 $$
+
+- Para la deuda después de cada pago:
+
+$$ Deuda = 960.26 - 233.33 = 726.93 $$
+
+- Entonces, el monto restante después de cada pago:
+
+$$ Restante = 20000 - 726.93 = 19273.07 $$
+
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 Se puede pasar de colaras a colones, de colones a dolares.
 
 Fuente principal de efectivo
