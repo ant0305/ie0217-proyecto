@@ -146,14 +146,15 @@ Esta parte, se piensa que este mas en el "back end", donde el cliente no deberia
 ```
 Para esta parte, se puede hacer un menu mas grande, antes de **modo atencion** y **modo informacion**, donde se le de la bienvenida al usuario al abrir la aplicacion. Puede ser implementado de este modo:
 
-+ Obtener identificacion
++ Ingrese su identificacion
 - Salir
 
-Si se presiona **obtener identificacion**, se genera un token random entre **0 y 999999999**, que sea unico y se guarde para posterior uso. Luego, se sigue con el resto del menu. Como por ejemplo:
+Si se presiona **Ingrese su identificacion**, se genera un metodo el cual reciba e imprima un numero entre 1 y 999999999, idealmente, seria la cedula del usuario.
 
-- "Bienvenido! Su token es 1029310."
+- "Bienvenido! Su cedula es 190201379."
     - Modo Informacion
     - Modo Atencion
+
  ```
 7. Préstamos asociados: Los clientes pueden tener préstamos asociados, ya sea en colones o en dólares, cada uno con características específicas como la tasa de interés, el periodo en meses y la cuota mensual.
 ```
@@ -198,6 +199,7 @@ Se podria extender le menu de prestamos de este modo:
         * Pagar prestamo en Dolares
         * Pagar prestamo en Colones
     - Generar informe (.txt)
+
 Donde, al seleccionar **Pagar prestamo** ya sea en dolares o en colones, se le pida al usuario que ingrese el dinero con el que va a pagar, como cada usuario tiene su token y cuenta especifica, se debe hacer que salga el dinero de esa cuenta y vaya a pagar el prestamo. Luego, al seleccionar **generar informe**, se crea un .txt donde van a estar las cuotas pagadas, desglosando el aporte al capital y los intereses abonados hasta el momento.
 
 
@@ -249,7 +251,7 @@ Bienvenido al Banco!
             * Generar informe (.txt)
 
 ![Diagrama de flujo propuesto del codigo diseñado, tentativo a cambio](https://github.com/ant0305/ie0217-proyecto/blob/8e1853c9efb83f5f0ba7363f14c783a35bbf8010/Diagrama.png)
-## Formulas a utilizar:
+## Formulas a utilizar, por ejemplo:
 - Cuotas mensuales:
     + Interes de 14%
     + Importe del préstamo: 20000, por ejemplo
@@ -270,19 +272,13 @@ $$ Deuda = 960.26 - 233.33 = 726.93 $$
 - Entonces, el monto restante después de cada pago:
 
 $$ Restante = 20000 - 726.93 = 19273.07 $$
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+## Cronograma
 
+![Cronograma](https://github.com/ant0305/ie0217-proyecto/blob/8e1853c9efb83f5f0ba7363f14c783a35bbf8010/Diagrama.png)
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-
-Se puede pasar de colaras a colones, de colones a dolares.
-
-Fuente principal de efectivo
-
-
-
-cadada uno hace su parte en la presentacion de pp o donde sea
 
 
 [^1] : https://www.bncr.fi.cr/3-detalles-que-no-pod%C3%A9s-pasar-por-alto-antes-de-pedir-un-pr%C3%A9stamo-personal#:~:text=Un%20pr%C3%A9stamo%20personal%20es%20una,porcentaje%20adicional%20correspondiente%20a%20intereses.
