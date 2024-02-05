@@ -255,7 +255,7 @@ Bienvenido al Banco!
                 + Pagar prestamo en Colones
             * Generar informe (.txt)
 
-![Diagrama de flujo propuesto del codigo diseñado, tentativo a cambio](https://github.com/ant0305/ie0217-proyecto/blob/8e1853c9efb83f5f0ba7363f14c783a35bbf8010/Diagrama.png)
+![Diagrama de flujo propuesto del codigo diseñado, tentativo a cambio](https://github.com/ant0305/ie0217-proyecto/blob/3738dd7b6d95e75f8a544167141755c4809ebee7/Diagrama.png)
 ## Formulas a utilizar, por ejemplo:
 - Cuotas mensuales:
     + Interes de 14%
