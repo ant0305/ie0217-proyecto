@@ -131,7 +131,7 @@ Entonces, la idea seria que si se selecciona **Configurar Cuenta**, se de la opc
 -4. Operaciones disponibles: Los clientes tienen la capacidad de realizar diversas operaciones, tales como depósitos, retiros, transferencias entre cuentas dirigidas a otros clientes, abonos a préstamos tanto propios como de otras personas, etc.
 
 ```
-Como se habla de operaciones, tiene sentido que esta opcion salga despues de seleccionar **modo atencion**. Dentro de modo atencion, ahora habria un submenu donde se puede seleccionar entre **Cuentas Bancarias** y **Operaciones dentro su cuenta.** Dentro de **Operaciones dentro su cuenta,** se habilitaria la opcion de realizar depositos, retiros, transferencias entre cuentas, abonos a prestamos, entre otros. Un ejemplo, seria tener una clase llamada OperacionesCuenta, donde dentro de ella estan los metodos Transferencia,Abono, Deposito, Retiro y entre otros, cada uno con su respectiva logica.
+Como se habla de operaciones, tiene sentido que esta opcion salga despues de seleccionar **modo atencion**. Dentro de modo atencion, ahora habria un submenu donde se puede seleccionar **Operaciones dentro su cuenta.** Dentro de **Operaciones dentro su cuenta,** se habilitaria la opcion de realizar depositos, retiros, transferencias entre cuentas, abonos a prestamos, entre otros. Un ejemplo, seria tener una clase llamada OperacionesCuenta, donde dentro de ella estan los metodos Transferencia,Abono, Deposito, Retiro y entre otros, cada uno con su respectiva logica.
 
 ```
 -5. Registro de transacciones: El sistema debe mantener un registro detallado de todas las transacciones realizadas, garantizando un seguimiento preciso de las operaciones efectuadas.
@@ -213,10 +213,10 @@ En esta parte, se va a usar como "memoria". Si un usuario llega y digita sus dat
 Entonces, como se ha estado haciendo, se buscaria un diseño asi:
 
 Bienvenido al Banco!
-+ Obtener identificacion
++ Digite su cedula
 - Salir
 --------------------------
-- "Token obtenido:1029310."
+- "Cedula:114845037."
     - Modo Informacion
         * INFO:Prestamo Personal
             + (Imprime tasas de interes)
@@ -234,6 +234,11 @@ Bienvenido al Banco!
             * Cuenta en Dolares
             * Cuenta en Colones
             * Deposito CDP
+        + Operaciones en su cuenta
+            - Deposito
+            - Retiro 
+            - Tranferencia 
+            - Abono
         + Prestamos
             * Sacar prestamo
                 - Prestamo en Dolares
