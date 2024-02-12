@@ -215,4 +215,3 @@ void Cliente::agregarCuentaDolares(CuentaBancaria* cuenta) {
         std::cerr << "El cliente ya tiene una cuenta en dolares." << std::endl;
     }
 }
-
