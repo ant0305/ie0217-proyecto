@@ -68,4 +68,19 @@ public:
 
 };
 
+class Prestamo {
+private:
+    std::string titular;
+    double monto;
+    double tasaInteres;
+    int plazoMeses;
+    std::string moneda;
+
+public:
+    Prestamo(std::string titular, double monto, double tasaInteres, int plazoMeses, std::string moneda)
+    : titular(titular), monto(monto), tasaInteres(tasaInteres), plazoMeses(plazoMeses), moneda(moneda) {}
+
+    static void calcularPrestamo();
+};
+
 #endif
