@@ -38,12 +38,15 @@ void procesarOpcion(Cliente& cliente) {
                         switch (opcion_secundario) {
                             case 1:
                                 InfoPrestamoPersonal();
+                                Prestamo::calcularPrestamo();
                                 break;
                             case 2:
                                 InfoPrestamoPrendario();
+                                Prestamo::calcularPrestamo();
                                 break;
                             case 3:
                                 InfoPrestamoHipotecario();
+                                Prestamo::calcularPrestamo();
                                 break;
                             case 4:
                                 std::cout << "Volviendo al menu principal... ";
