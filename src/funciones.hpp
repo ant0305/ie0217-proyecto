@@ -4,17 +4,16 @@
 #include <iostream>
 #include <cstdlib>
 
-struct Cliente
+struct Base
 {
-    int Cedula;
-    
+    int Cedula;  
 };
 
 
 
 void MostrarMenu();
 
-void procesarOpcion(Cliente& cliente);
+void procesarOpcion(Base& cliente);
 
 
 #endif

@@ -33,7 +33,7 @@ void InfoPrestamoHipotecario() {
     cout << "Por tanto, el bien adquirido queda hipotecado a favor de la entiendad financiera hasta que finalice el pago del prestamo.";
 }
 
-void Prestamo::calcularPrestamo(){
+void InfoPrestamo::calcularPrestamo(){
     int monedaOpcion;
     do{
         std::cout << "\nSeleccione la moneda (1 para Colones, 2 para Dolares): ";

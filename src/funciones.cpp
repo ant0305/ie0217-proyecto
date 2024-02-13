@@ -1,4 +1,5 @@
 #include "funciones.hpp"
+#include "banco.hpp"
 #include "info.hpp"
 #include <iostream>
 #include <limits>
@@ -12,7 +13,7 @@ void MostrarMenu() {
     std::cout << "\n 3. Salir\n";
 }
 
-void procesarOpcion(Cliente& cliente) {
+void procesarOpcion(Base& cliente) {
     int opcion;
     do {
         try {
@@ -38,15 +39,15 @@ void procesarOpcion(Cliente& cliente) {
                         switch (opcion_secundario) {
                             case 1:
                                 InfoPrestamoPersonal();
-                                Prestamo::calcularPrestamo();
+                                InfoPrestamo::calcularPrestamo();
                                 break;
                             case 2:
                                 InfoPrestamoPrendario();
-                                Prestamo::calcularPrestamo();
+                                InfoPrestamo::calcularPrestamo();
                                 break;
                             case 3:
                                 InfoPrestamoHipotecario();
-                                Prestamo::calcularPrestamo();
+                                InfoPrestamo::calcularPrestamo();
                                 break;
                             case 4:
                                 std::cout << "Volviendo al menu principal... ";
@@ -57,20 +58,31 @@ void procesarOpcion(Cliente& cliente) {
                                 break;
                         }
 
-                        // Si la opción no es 4, salir del bucle del menú secundario y volver al menú principal
+                        // Si la opción es 4, salir del bucle del menú secundario y volver al menú principal
                         if (opcion_secundario == 4) {
                             break;
                         }
                     }
                     break;
                 }
-                case 2:
-                    // Implementa la lógica para Modo_Atencion(cliente);
-                    std::cout << "Implementa la logica para Modo_Atencion(cliente);\n";
+                case 2: {
+                    while (true) {
+                        mostrarMenuAtencion();
+                    
+                    if (std::cin.fail()) {
+                            throw std::runtime_error("Opcion no valida. Por favor, ingrese un numero valido.");
+                        }
+                    // Si la opción es 5, salir del bucle del menú secundario y volver al menú principal
+                    if (opcion != 5) {
+                            break;
+                        }
+                    }
                     break;
-                case 3:
+                }
+                case 3:{
                     std::cout << "\nSaliendo del programa. Gracias por utilizar nuestros servicios.\n";
                     exit(0);
+                }
                 default:
                     std::cout << "Opcion no valida. Intente de Nuevo...\n";
                     break;

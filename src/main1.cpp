@@ -3,7 +3,7 @@
 #include <cstdlib>
  
 int main () {
-    Cliente cliente;
+    Base cliente;
 
     while(1){
         MostrarMenu();
