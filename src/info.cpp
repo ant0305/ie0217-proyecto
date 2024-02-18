@@ -1,5 +1,6 @@
 #include "info.hpp"
 #include <iostream>
+#include <fstream>
 #include <cmath>
 #include <iomanip>
 using namespace std;
@@ -15,7 +16,7 @@ void MostrarMenuSecundario (){
     cout << "\n 1. Informacion Prestamo Personal\n";
     cout << "\n 2. Informacion Prestamo Prendario\n";
     cout << "\n 3. Informacion Prestamo Hipotecario\n";
-    cout << "\n 4. Salir \n";
+    cout << "\n 4. Volver al menu PRINCIPAL \n";
 }
 
 /**
@@ -60,10 +61,10 @@ void InfoPrestamoHipotecario() {
  * 
  * Este método estático realiza el cálculo de un préstamo y muestra una tabla con detalles mensuales.
  */
-void InfoPrestamo::calcularPrestamo(){
+void InfoPrestamo::calcularPrestamo() {
     int monedaOpcion;
     // Solicitar al usuario que seleccione la moneda hasta que proporcione una opción válida (1 o 2)
-    do{
+    do {
         std::cout << "\nSeleccione la moneda (1 para Colones, 2 para Dolares): ";
         std::cin >> monedaOpcion;
 
@@ -71,7 +72,7 @@ void InfoPrestamo::calcularPrestamo(){
             std::cout << "Por favor, ingrese una opción válida (1 o 2)." << std::endl;
         std::string moneda = (monedaOpcion == 1) ? "Colones" : "Dolares";
         }
-    }while (monedaOpcion != 1 && monedaOpcion != 2);
+    } while (monedaOpcion != 1 && monedaOpcion != 2);
     // Asignar la cadena "Colones" o "Dolares" según la elección del usuario
     std::string moneda = (monedaOpcion == 1) ? "Colones" : "Dolares";
     std::cout << "Ha seleccionado: " << moneda << std::endl;
@@ -128,22 +129,28 @@ void InfoPrestamo::calcularPrestamo(){
     double tasaInteresMensual = tasaInteres / 100 / 12;
     double cuotaMensual = monto * tasaInteresMensual / (1 - std::pow(1 + tasaInteresMensual, -plazoMeses));
 
-    // Codigo para generar la tabla
-    std::cout << std::setw(10) << std::left << "Mes"
-              << std::setw(15) << std::left << "Cuota"
-              << std::setw(15) << std::left << "Intereses"
-              << std::setw(20) << std::left << "Pago sin Intereses"
-              << std::setw(20) << std::left << "Monto Restante\n";
+    // Crear y abrir un archivo para escribir
+    std::ofstream archivo("tabla_prestamo.txt");
+
+    // Escribir la tabla en el archivo
+    archivo << std::setw(10) << std::left << "Mes"
+            << std::setw(15) << std::left << "Cuota"
+            << std::setw(15) << std::left << "Intereses"
+            << std::setw(20) << std::left << "Pago sin Intereses"
+            << std::setw(15) << std::left << "Monto Restante\n";
 
     double montoRestante = monto;
     for (int mes = 1; mes <= plazoMeses; ++mes) {
         double intereses = montoRestante * tasaInteresMensual;
         double amortizacion = cuotaMensual - intereses;
         montoRestante -= amortizacion;
-        std::cout << std::setw(10) << mes
-                  << std::setw(15) << std::fixed << std::setprecision(2) << cuotaMensual
-                  << std::setw(15) << std::fixed << std::setprecision(2) << intereses
-                  << std::setw(20) << std::fixed << std::setprecision(2) << amortizacion
-                  << std::fixed << std::setprecision(2) << std::setw(20) << montoRestante << "\n";
+        archivo << std::setw(10) << mes
+                << std::setw(15) << std::fixed << std::setprecision(2) << cuotaMensual
+                << std::setw(15) << std::fixed << std::setprecision(2) << intereses
+                << std::setw(20) << std::fixed << std::setprecision(2) << amortizacion
+                << std::fixed << std::setprecision(2) << std::setw(20) << montoRestante << "\n";
     }
+    // Cerrar el archivo
+    archivo.close();
+    std::cout << "\nLa tabla del prestamo se ha guardado en el archivo tabla_prestamo.txt.\n";
 }
