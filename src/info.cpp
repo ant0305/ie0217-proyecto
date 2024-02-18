@@ -4,14 +4,25 @@
 #include <iomanip>
 using namespace std;
 
+
+/**
+ * @brief Muestra el menú secundario.
+ * 
+ * Esta función proporciona un menú secundario para el usuario.
+ */
 void MostrarMenuSecundario (){
-    cout << "\n ---MENU SECUNDARIO---";
+    cout << "\n ---BIENVENIDO AL MODO INFORMACION---";
     cout << "\n 1. Informacion Prestamo Personal\n";
     cout << "\n 2. Informacion Prestamo Prendario\n";
     cout << "\n 3. Informacion Prestamo Hipotecario\n";
-    cout << "\n 4. Salir\n";
+    cout << "\n 4. Salir \n";
 }
 
+/**
+ * @brief Muestra información sobre préstamos personales.
+ * 
+ * Esta función presenta información detallada sobre préstamos personales.
+ */
 void InfoPrestamoPersonal(){
     cout << "\n ---Informacion sobre los Prestamos Personales---\n";
     cout << "Este prestamo es un financiamiento de dinero por un periodo establecido, la persona recibe una suma de dinero que luego debe de ser reembolsada junto a un porcentaje adicional (intereses generados).";
@@ -21,24 +32,51 @@ void InfoPrestamoPersonal(){
     cout << "\n     3. Consumo como solventar las necesidades cotidianas,ya sea, reemplazar una computadora averiada o comprar un celular nuevo.\n";
 }
 
+
+/**
+ * @brief Muestra información sobre préstamos prendarios.
+ * 
+ * Esta función presenta información detallada sobre préstamos prendarios.
+ */
 void InfoPrestamoPrendario() {
     cout << "\n ---Informacion sobre Prestamos Prendarios---\n";
     cout << "Este prestamo es una forma de financiamiento en la cual la persona ofrece una prenda como garantia o colateral para obtener un prestamo, generalmente es un bien mueble como vehiculos, motocicletas, entre otros.";
     cout << "\nPor tanto, el bien ofrecido funciona como garantia hasta que se cancele el prestamo. El bien adquirido queda prendado a favor de la entidad que brinda el financiamiento hasta que finalice el pago del prestamo.\n";
 }
 
+/**
+ * @brief Muestra información sobre préstamos hipotecarios.
+ * 
+ * Esta función presenta información detallada sobre préstamos hipotecarios.
+ */
 void InfoPrestamoHipotecario() {
     cout << "\n ---Informacion sobre Prestamos Hipotecarios---\n";
     cout << "El prestamo hipotecario es un prestamo con garantia hipotecaria, es decir, un inmueble es utilizado como garantia, estos creditos son adquiridos para la compra de lotes, viviendas, entre otros.";
-    cout << "Por tanto, el bien adquirido queda hipotecado a favor de la entiendad financiera hasta que finalice el pago del prestamo.\n";
+    cout << "Por tanto, el bien adquirido queda hipotecado a favor de la entiendad financiera hasta que finalice el pago del prestamo.";
 }
 
-void Prestamo::calcularPrestamo(){
-    std::cout << "\nSeleccione la moneda (1 para Colones, 2 para Dolares): ";
+/**
+ * @brief Calcula la información de un préstamo.
+ * 
+ * Este método estático realiza el cálculo de un préstamo y muestra una tabla con detalles mensuales.
+ */
+void InfoPrestamo::calcularPrestamo(){
     int monedaOpcion;
-    std::cin >> monedaOpcion;
-    std::string moneda = (monedaOpcion == 1) ? "Colones" : "Dolares";
+    // Solicitar al usuario que seleccione la moneda hasta que proporcione una opción válida (1 o 2)
+    do{
+        std::cout << "\nSeleccione la moneda (1 para Colones, 2 para Dolares): ";
+        std::cin >> monedaOpcion;
 
+        if (monedaOpcion != 1 && monedaOpcion != 2) {
+            std::cout << "Por favor, ingrese una opción válida (1 o 2)." << std::endl;
+        std::string moneda = (monedaOpcion == 1) ? "Colones" : "Dolares";
+        }
+    }while (monedaOpcion != 1 && monedaOpcion != 2);
+    // Asignar la cadena "Colones" o "Dolares" según la elección del usuario
+    std::string moneda = (monedaOpcion == 1) ? "Colones" : "Dolares";
+    std::cout << "Ha seleccionado: " << moneda << std::endl;
+        
+    // Solicitar al usuario que ingrese el monto del préstamo
     std::cout << "\nIngrese el monto del prestamo: ";
     double monto;
     std::cin >> monto;
@@ -46,23 +84,24 @@ void Prestamo::calcularPrestamo(){
     int plazoMeses;
     double tasaInteres;
     if (monedaOpcion == 1) {
-        cout << "\nOpciones de prestamo en Colones:\n"
+        // Solicitar al usuario que seleccione las opciones de préstamo según la moneda
+        std::cout << "\nOpciones de prestamo en Colones:\n"
                   << "1. 144 meses con 12.72% de interes\n"
                   << "2. 108 meses con 25.44% de interes\n"
                   << "3. 84 meses con 38.16% de interes\n"
                   << "4. Volver al menu\n";
     } else {
-        cout << "\nOpciones de prestamo en Dolares:\n"
+        std::cout << "\nOpciones de prestamo en Dolares:\n"
                   << "1. 144 meses con 10.09% de interes\n"
                   << "2. 108 meses con 20.18% de interes\n"
                   << "3. 84 meses con 30.27% de interes\n"
                   << "4. Volver al menu\n";
     }
-
-    cout << "Seleccione una opcion: ";
+    // Solicitar al usuario que seleccione una opción específica
+    std::cout << "Seleccione una opcion: ";
     int prestamoOpcion;
-    cin >> prestamoOpcion;
-
+    std::cin >> prestamoOpcion;
+    // Asignar valores según la opción seleccionada por el usuario
     switch (prestamoOpcion) {
         case 1:
             plazoMeses = 144;
@@ -79,7 +118,7 @@ void Prestamo::calcularPrestamo(){
         case 4:
             return;
         default:
-            cerr << "\nOpcion no valida, seleccionando opcion predeterminada.\n";
+            std::cerr << "\nOpcion no valida, seleccionando opcion predeterminada.\n";
             plazoMeses = 144;
             tasaInteres = (monedaOpcion == 1) ? 12.72 : 10.09;
             break;
@@ -89,7 +128,7 @@ void Prestamo::calcularPrestamo(){
     double tasaInteresMensual = tasaInteres / 100 / 12;
     double cuotaMensual = monto * tasaInteresMensual / (1 - std::pow(1 + tasaInteresMensual, -plazoMeses));
 
-    // tabla
+    // Codigo para generar la tabla
     std::cout << std::setw(10) << std::left << "Mes"
               << std::setw(15) << std::left << "Cuota"
               << std::setw(15) << std::left << "Intereses"
