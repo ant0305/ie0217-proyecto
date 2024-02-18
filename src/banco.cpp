@@ -282,10 +282,6 @@ void Cliente::agregarCuentaDolares(CuentaBancaria* cuenta) {
         std::cerr << "El cliente ya tiene una cuenta en dolares." << std::endl;
     }
 }
-<<<<<<< HEAD:banco.cpp
-=======
-
-
 
 /**
  * @brief Muestra el menú de atención al cliente y realiza operaciones según la opción seleccionada.
@@ -367,4 +363,3 @@ std::vector<Cliente*> clientes;
     }
     clientes.clear();
 }
->>>>>>> main:src/banco.cpp
