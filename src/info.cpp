@@ -87,15 +87,15 @@ void InfoPrestamo::calcularPrestamo() {
     if (monedaOpcion == 1) {
         // Solicitar al usuario que seleccione las opciones de préstamo según la moneda
         std::cout << "\nOpciones de prestamo en Colones:\n"
-                  << "1. 144 meses con 12.72% de interes\n"
-                  << "2. 108 meses con 25.44% de interes\n"
-                  << "3. 84 meses con 38.16% de interes\n"
+                  << "1. 96 meses con 12.72% de interes\n"
+                  << "2. 120 meses con 25.44% de interes\n"
+                  << "3. 180 meses con 38.16% de interes\n"
                   << "4. Volver al menu\n";
     } else {
         std::cout << "\nOpciones de prestamo en Dolares:\n"
-                  << "1. 144 meses con 10.09% de interes\n"
-                  << "2. 108 meses con 20.18% de interes\n"
-                  << "3. 84 meses con 30.27% de interes\n"
+                  << "1. 96 meses con 10.09% de interes\n"
+                  << "2. 120 meses con 20.18% de interes\n"
+                  << "3. 180 meses con 30.27% de interes\n"
                   << "4. Volver al menu\n";
     }
     // Solicitar al usuario que seleccione una opción específica
@@ -105,22 +105,22 @@ void InfoPrestamo::calcularPrestamo() {
     // Asignar valores según la opción seleccionada por el usuario
     switch (prestamoOpcion) {
         case 1:
-            plazoMeses = 144;
+            plazoMeses = 96;
             tasaInteres = (monedaOpcion == 1) ? 12.72 : 10.09;
             break;
         case 2:
-            plazoMeses = 108;
+            plazoMeses = 120;
             tasaInteres = (monedaOpcion == 1) ? 25.44 : 20.18;
             break;
         case 3:
-            plazoMeses = 84;
+            plazoMeses = 180;
             tasaInteres = (monedaOpcion == 1) ? 38.16 : 30.27;
             break;
         case 4:
             return;
         default:
             std::cerr << "\nOpcion no valida, seleccionando opcion predeterminada.\n";
-            plazoMeses = 144;
+            plazoMeses = 84;
             tasaInteres = (monedaOpcion == 1) ? 12.72 : 10.09;
             break;
     }
