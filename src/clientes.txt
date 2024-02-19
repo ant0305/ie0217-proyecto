@@ -1,4 +1,0 @@
-ID:123456789, Nombre:Chencho, CDPs activos:1, Monto CDP:
-ID:987654321, Nombre:Cerda, CDPs activos:1, Monto CDP:
-ID:123456789, Nombre:Chencho, CDPs activos:1, Monto CDP:
-ID:987654321, Nombre:Cerda, CDPs activos:2, Monto CDP:

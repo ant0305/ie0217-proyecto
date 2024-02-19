@@ -147,6 +147,124 @@ void CDP::crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes) {
 }
 
 /**
+ * @brief Agrega un Prestamo a la lista de Prestamos del cliente.
+ * @param nuevoPrestamo Referencia al nuevo Prestamo a agregar.
+ */
+void Cliente::agregarPrestamo(const Prestamo &nuevoPrestamo) {
+    prestamos.push_back(nuevoPrestamo);
+}
+
+void Prestamo::crearYAgregarPrestamos(std::vector<Cliente*>& clientes) {
+    // Verifica si hay clientes registrados
+    if (clientes.empty()) {
+        std::cout << "No hay clientes registrados.\n";
+        return;
+    }
+    // Muestra la lista de clientes
+    std::cout << "Clientes registrados:\n";
+    for (const auto& cliente : clientes) {
+        std::cout << "ID: " << cliente->obtenerID() << ", Nombre: " << cliente->obtenerNombre() << "\n";
+    }
+
+    // Ingresa el ID del cliente para el Prestamo
+    std::cout << "Ingrese el ID del cliente para el Prestamo: ";
+    int clienteID;
+    std::cin >> clienteID;
+
+    // Busca al cliente seleccionado
+    Cliente* clienteSeleccionado = nullptr;
+    for (auto& cliente : clientes) {
+        if (cliente->obtenerID() == clienteID) {
+            clienteSeleccionado = cliente;
+            break;
+        }
+    }
+
+    // Verifica si el cliente existe
+    if (!clienteSeleccionado) {
+        std::cout << "Cliente no encontrado.\n";
+        return;
+    }
+
+    // Muestra los tipos de Prestamos
+    std::cout << "Tipos de Prestamos\n"
+              << "1. Prestamo Personal\n"
+              << "2. Prestamo Prendario\n"
+              << "3. Prestamo Hipotecario\n"
+              <<"\nSeleccione el tipo de Prestamo que desea adquirir: ";
+    int tipoPrestamo;
+    std::cin >> tipoPrestamo;
+
+    // Ingresa la moneda y el monto del Prestamo
+    std::cout << "Seleccione la moneda (1 para Colones, 2 para Dolares): ";
+    int monedaOpcion;
+    std::cin >> monedaOpcion;
+    std::string moneda = (monedaOpcion == 1) ? "Colones" : "Dolares";
+
+    // Verifica si ya tiene un prestamo en esa moneda
+    for (const auto& prestamo : clienteSeleccionado->obtenerPrestamos()) {
+        if (prestamo.obtenerMoneda() == moneda) {
+            std::cout << "Cliente ya posee un prestamo en " << moneda;
+            return;
+        }
+    }
+
+    // Solicita el monto del Prestamo
+    std::cout << "Ingrese el monto del Prestamo: ";
+    double monto;
+    std::cin >> monto;
+
+    // Muestra las opciones de Prestamo según la moneda
+    int plazoMeses;
+    double tasaInteres;
+    if (monedaOpcion == 1) {
+        std::cout << "\nOpciones de prestamo en Colones:\n"
+                  << "1. 96 meses con 12.72% de interes\n"
+                  << "2. 120 meses con 25.44% de interes\n"
+                  << "3. 180 meses con 38.16% de interes\n";
+    } else {
+        std::cout << "\nOpciones de prestamo en Dolares:\n"
+                  << "1. 96 meses con 10.09% de interes\n"
+                  << "2. 120 meses con 20.18% de interes\n"
+                  << "3. 180 meses con 30.27% de interes\n";
+    }
+
+    // Solicita la opción del Prestamo
+    std::cout << "Seleccione una opcion: ";
+    int prestamoOpcion;
+    std::cin >> prestamoOpcion;
+    // Asigna el plazo y la tasa de interés según la opción del CDP
+    switch (prestamoOpcion) {
+        case 1:
+            plazoMeses = 96;
+            tasaInteres = (monedaOpcion == 1) ? 12.72 : 10.09;
+            break;
+        case 2:
+            plazoMeses = 120;
+            tasaInteres = (monedaOpcion == 1) ? 25.44 : 20.18;
+            break;
+        case 3:
+            plazoMeses = 180;
+            tasaInteres = (monedaOpcion == 1) ? 38.16 : 30.27;
+            break;
+        case 4:
+            return;
+        default:
+            std::cerr << "\nOpcion no valida, seleccionando opcion predeterminada.\n";
+            plazoMeses = 84;
+            tasaInteres = (monedaOpcion == 1) ? 12.72 : 10.09;
+            break;
+    }
+    // Crea un nuevo Prestamo y lo agrega al cliente
+    Prestamo nuevoPrestamo(clienteSeleccionado->obtenerNombre(), monto, tasaInteres, plazoMeses, moneda);
+    clienteSeleccionado->agregarPrestamo(nuevoPrestamo);
+
+    // Informa que el Prestamo se creó y agregó con éxito
+    std::cout << "Prestamo creado y agregado al cliente con exito.\n";
+}
+
+
+/**
  * @brief Se almacenan los IDs asignados a clientes.
  */
 std::set<int> Cliente::idsAsignados;
@@ -356,7 +474,8 @@ std::vector<Cliente*> clientes;
                   << "2. Crear CDP para Cliente\n"
                   << "3. Mostrar Detalles del Cliente en un archivo aparte\n"
                   << "4. Agregar cuenta para Cliente\n"
-                  << "5. Salir\n"
+                  << "5. Agregar Prestamo\n"
+                  << "6. Salir\n"
                   << "Ingrese una opcion para realizar operaciones en su cuenta, o bien, presione 5 para volver al menu principal: ";
         std::cin >> opcion;
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -418,7 +537,11 @@ std::vector<Cliente*> clientes;
                 Cliente::agregarCuentaABanco(clientes);
                 break;
             }
-            case 5:
+            case 5: {
+                Prestamo::crearYAgregarPrestamos(clientes);
+                break;
+            }
+            case 6:
                 std::cout << "Volviendo al menu principal...\n";
 
             Cliente::archivoClientes.close();  // Cierra el archivo después de escribir

@@ -66,6 +66,49 @@ public:
 };
 
 /**
+ * @brief Clase que representa un préstamo.
+ */
+class Prestamo {
+private:
+    std::string titular; ///< Titular del préstamo.
+    double monto; ///< Monto del préstamo.
+    double tasaInteres; ///< Tasa de interés del préstamo.
+    int plazoMeses;  ///< Plazo en meses del préstamo.
+    std::string moneda; ///< Moneda del préstamo.
+
+public:
+    /**
+     * @brief Constructor de la clase Prestamo.
+     * @param titular Titular del préstamo.
+     * @param monto Monto del préstamo.
+     * @param tasaInteres Tasa de interés del préstamo.
+     * @param plazoMeses Plazo en meses del préstamo.
+     * @param moneda Moneda del préstamo.
+     */
+    Prestamo(std::string titular, double monto, double tasaInteres, int plazoMeses, std::string moneda)
+    : titular(titular), monto(monto), tasaInteres(tasaInteres), plazoMeses(plazoMeses), moneda(moneda) {}
+    
+    /**
+     * @brief Método estático que calcula la información del préstamo.
+     */
+    static void calcularPrestamo();
+    /**
+     * @brief Metodo estatico que crea y agrega los prestamos
+     * 
+     */
+    static void crearYAgregarPrestamos(std::vector<Cliente*>& clientes);
+    /**
+     * @brief Metodo para obtener la moneda del prestamo
+     
+     * @return el tipo de moneda 
+     */
+    std::string obtenerMoneda() const {
+        return moneda;
+    }
+};
+
+
+/**
  * @brief Clase que representa a un cliente del banco.
  */
 class Cliente {
@@ -92,6 +135,7 @@ public:
     CuentaBancaria* cuentaDolares; ///< Puntero a la cuenta en dólares del cliente.
     CDP* cdp;  ///< Puntero al Certificado de Depósito a Plazo (CDP) del cliente.
     static std::ofstream archivoClientes; ///< Flujo de salida para el archivo de clientes.
+    Prestamo* prestamo; ///< Puntero al Prestamo del cliente.
 
 
     /**
@@ -120,6 +164,26 @@ public:
      */
     std::string obtenerNombre() const;
 
+    /**
+     * @brief Obtiene el tipo de moneda.
+     * @return el tipo de moneda
+     */
+    std::string obtenerMoneda() const {
+        if (!prestamos.empty()) {
+            return prestamos[0].obtenerMoneda();
+        } else {
+            return "";
+        }
+    }
+    /**
+     * @brief Metodo para obtener la lista de prestamos del cliente
+     *
+     * @return la lista
+     */
+    const std::vector<Prestamo>& obtenerPrestamos() const {
+        return prestamos;
+    }
+
 
     /**
      * @brief Método estático para verificar si una cadena es un número válido.
@@ -134,6 +198,13 @@ public:
      */
     void agregarCDP(const CDP &nuevoCDP);
     std::vector<CDP> cdps;///< Vector que almacena los CDPs del cliente.
+
+    /**
+     * @brief Agrega un Prestamo al cliente.
+     * @param nuevoPrestamo  Nuevo Prestamo a agregar
+     */
+    void agregarPrestamo(const Prestamo &nuevoPrestamo);
+    std::vector<Prestamo> prestamos; ///< Vector que almacena los prestamos del cliente.
 
     /**
      * @brief Agrega una cuenta al cliente.
@@ -151,38 +222,8 @@ public:
 
 
 /**
- * @brief Clase que representa un préstamo.
- */
-class Prestamo {
-private:
-    std::string titular; ///< Titular del préstamo.
-    double monto; ///< Monto del préstamo.
-    double tasaInteres; ///< Tasa de interés del préstamo.
-    int plazoMeses;  ///< Plazo en meses del préstamo.
-    std::string moneda; ///< Moneda del préstamo.
-
-public:
-    /**
-     * @brief Constructor de la clase Prestamo.
-     * @param titular Titular del préstamo.
-     * @param monto Monto del préstamo.
-     * @param tasaInteres Tasa de interés del préstamo.
-     * @param plazoMeses Plazo en meses del préstamo.
-     * @param moneda Moneda del préstamo.
-     */
-    Prestamo(std::string titular, double monto, double tasaInteres, int plazoMeses, std::string moneda)
-    : titular(titular), monto(monto), tasaInteres(tasaInteres), plazoMeses(plazoMeses), moneda(moneda) {}
-    
-    /**
-     * @brief Método estático que calcula la información del préstamo.
-     */
-    static void calcularPrestamo();
-};
-
-/**
  * @brief Función que muestra el menú de atención.
  */
-
 void mostrarMenuAtencion();
 
 
