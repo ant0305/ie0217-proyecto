@@ -3,6 +3,8 @@
 #include <vector>
 #include <limits>
 #include <memory>
+#include <ctime>
+#include <iomanip>
 
 /**
  * @brief Agrega un CDP a la lista de CDPs del cliente.
@@ -327,6 +329,9 @@ int Cliente::obtenerID() const {
     return id;
 }
 
+double CDP::obtenerMonto() const {
+    return monto;
+}
 
 /**
  * @brief Obtiene el nombre del cliente.
@@ -348,6 +353,7 @@ void Cliente::agregarCuentaABanco(std::vector<Cliente*>& clientes) {
         std::cout << "No hay clientes registrados.\n";
         return;
     }
+    
     // Solicitar al usuario el ID del cliente al que se le desea agregar una cuenta
     std::cout << "Ingrese el ID del cliente a quien desea agregar una cuenta: ";
     int clienteID;
@@ -366,6 +372,7 @@ void Cliente::agregarCuentaABanco(std::vector<Cliente*>& clientes) {
         std::cout << "Cliente no encontrado.\n";
         return;
     }
+    
     // Solicitar al usuario información para la nueva cuenta
     std::string numeroCuenta, moneda;
     double saldoInicial;
@@ -461,7 +468,6 @@ void mostrarMenuAtencion(){
 std::vector<Cliente*> clientes;
     std::string entradaID, nombre;
     int id, opcion = 0;
-
     while (opcion != 5) {
         std::cout << "\n---BIENVENIDO AL MODO ATENCION---\n"
                   << "1. Crear Cliente\n"
@@ -501,16 +507,23 @@ std::vector<Cliente*> clientes;
                 clientes[clientes.size() - 1]->incrementarContadorCDPs();
                 break;
                 clientes[0]->incrementarContadorCDPs();
+                
             }
             case 3: {
                 // Abrir el archivo en modo de escritura
                 std::ofstream archivo("clientes.txt",std::ios_base::app);
-
                 if (archivo.is_open()) {
+                   
                     for (auto& cliente : clientes) {
+                        std::time_t tiempo_actual = std::time(nullptr);
+                        std::tm* tiempo_info = std::localtime(&tiempo_actual);
+                        archivo << "-----------------------------------------------------------------" << "\n";
+                        archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
                         // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
                         archivo << "ID:" << cliente -> obtenerID() << ", Nombre:" << cliente->obtenerNombre() <<", CDPs activos:"<< cliente->obtenerContadorCDPs() <<
-                        ", Monto CDP:\n";
+                        "\n";
+
+                        archivo << "-----------------------------------------------------------------" << "\n";
                     }
                     archivo.close();  // Cerrar el archivo después de escribir
                     std::cout << "Informacion de clientes guardada en 'clientes.txt'.\n";
@@ -521,8 +534,8 @@ std::vector<Cliente*> clientes;
                     break;
             }
             case 4: {
-                // Leer el archivo .txt antes de agregar la cuenta al banco
                 Cliente::agregarCuentaABanco(clientes);
+                break;
             }
             case 5: {
                 Prestamo::crearYAgregarPrestamos(clientes);
