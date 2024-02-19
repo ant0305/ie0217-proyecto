@@ -111,48 +111,6 @@ public:
     }
 };
 
-/**
- * @brief Clase que representa un préstamo.
- */
-class Prestamo {
-private:
-    std::string titular; ///< Titular del préstamo.
-    double monto; ///< Monto del préstamo.
-    double tasaInteres; ///< Tasa de interés del préstamo.
-    int plazoMeses;  ///< Plazo en meses del préstamo.
-    std::string moneda; ///< Moneda del préstamo.
-
-public:
-    /**
-     * @brief Constructor de la clase Prestamo.
-     * @param titular Titular del préstamo.
-     * @param monto Monto del préstamo.
-     * @param tasaInteres Tasa de interés del préstamo.
-     * @param plazoMeses Plazo en meses del préstamo.
-     * @param moneda Moneda del préstamo.
-     */
-    Prestamo(std::string titular, double monto, double tasaInteres, int plazoMeses, std::string moneda)
-    : titular(titular), monto(monto), tasaInteres(tasaInteres), plazoMeses(plazoMeses), moneda(moneda) {}
-    
-    /**
-     * @brief Método estático que calcula la información del préstamo.
-     */
-    static void calcularPrestamo();
-    /**
-     * @brief Metodo estatico que crea y agrega los prestamos
-     * 
-     */
-    static void crearYAgregarPrestamos(std::vector<Cliente*>& clientes);
-    /**
-     * @brief Metodo para obtener la moneda del prestamo
-     
-     * @return el tipo de moneda 
-     */
-    std::string obtenerMoneda() const {
-        return moneda;
-    }
-};
-
 
 /**
  * @brief Clase que representa a un cliente del banco.
