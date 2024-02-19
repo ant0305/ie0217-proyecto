@@ -60,13 +60,9 @@ public:
      * @param clientes Vector de punteros a objetos de la clase Cliente.
      */
     static void crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes);
-    std::string obtenerInformacion() const {
-        return "Titular: " + titular +
-               "\nMonto: " + std::to_string(monto) +
-               "\nTasa de Interés: " + std::to_string(tasaInteres) +
-               "\nPlazo en Días: " + std::to_string(plazoDias) +
-               "\nMoneda: " + moneda;
-    }
+    double obtenerMonto() const;
+    
+
 };
 
 /**
@@ -81,6 +77,13 @@ public:
         }
     void incrementarContadorCDPs() {
         contadorCDPs++;
+    }
+    int contadorCuentas = 0;
+    int obtenerContadorCuentas() const {
+            return contadorCuentas;
+        }
+    void incrementarContadorCuentas() {
+        contadorCuentas++;
     }
     static std::set<int> idsAsignados; ///< Conjunto de IDs asignados a clientes.
     int id; ///< ID del cliente.
@@ -139,6 +142,7 @@ public:
     void agregarCuentaColones(CuentaBancaria* cuenta);
     void agregarCuentaDolares(CuentaBancaria* cuenta);
     static void agregarCuentaABanco(std::vector<Cliente*>& clientes);
+    
     /**
      * @brief Destructor de la clase Cliente.
      */
