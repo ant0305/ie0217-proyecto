@@ -60,6 +60,56 @@ public:
      * @param clientes Vector de punteros a objetos de la clase Cliente.
      */
     static void crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes);
+    std::string obtenerInformacion() const {
+        return "Titular: " + titular +
+               "\nMonto: " + std::to_string(monto) +
+               "\nTasa de Interés: " + std::to_string(tasaInteres) +
+               "\nPlazo en Días: " + std::to_string(plazoDias) +
+               "\nMoneda: " + moneda;
+    }
+};
+
+
+/**
+ * @brief Clase que representa un préstamo.
+ */
+class Prestamo {
+private:
+    std::string titular; ///< Titular del préstamo.
+    double monto; ///< Monto del préstamo.
+    double tasaInteres; ///< Tasa de interés del préstamo.
+    int plazoMeses;  ///< Plazo en meses del préstamo.
+    std::string moneda; ///< Moneda del préstamo.
+
+public:
+    /**
+     * @brief Constructor de la clase Prestamo.
+     * @param titular Titular del préstamo.
+     * @param monto Monto del préstamo.
+     * @param tasaInteres Tasa de interés del préstamo.
+     * @param plazoMeses Plazo en meses del préstamo.
+     * @param moneda Moneda del préstamo.
+     */
+    Prestamo(std::string titular, double monto, double tasaInteres, int plazoMeses, std::string moneda)
+    : titular(titular), monto(monto), tasaInteres(tasaInteres), plazoMeses(plazoMeses), moneda(moneda) {}
+    
+    /**
+     * @brief Método estático que calcula la información del préstamo.
+     */
+    static void calcularPrestamo();
+    /**
+     * @brief Metodo estatico que crea y agrega los prestamos
+     * 
+     */
+    static void crearYAgregarPrestamos(std::vector<Cliente*>& clientes);
+    /**
+     * @brief Metodo para obtener la moneda del prestamo
+     
+     * @return el tipo de moneda 
+     */
+    std::string obtenerMoneda() const {
+        return moneda;
+    }
 };
 
 /**
@@ -68,6 +118,13 @@ public:
 class Cliente {
 
 public:
+    int contadorCDPs = 0;
+    int obtenerContadorCDPs() const {
+            return contadorCDPs;
+        }
+    void incrementarContadorCDPs() {
+        contadorCDPs++;
+    }
     static std::set<int> idsAsignados; ///< Conjunto de IDs asignados a clientes.
     int id; ///< ID del cliente.
     std::string nombre; ///< Nombre del cliente.

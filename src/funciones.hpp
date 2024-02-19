@@ -11,7 +11,7 @@
 
 struct Base
 {
-    int Cedula;  
+    
 };
 
 
