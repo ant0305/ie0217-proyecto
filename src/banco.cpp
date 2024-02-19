@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <limits>
+#include <memory>
 
 /**
  * @brief Agrega un CDP a la lista de CDPs del cliente.
@@ -12,19 +13,58 @@ void Cliente::agregarCDP(const CDP &nuevoCDP) {
     cdps.push_back(nuevoCDP);
 }
 
+// Función para cargar clientes desde un archivo
+std::vector<Cliente*> cargarClientesDesdeArchivo(const std::string& nombreArchivo) {
+    std::vector<Cliente*> clientes;
+
+    std::ifstream archivoEntrada(nombreArchivo);
+    if (archivoEntrada.is_open()) {
+        int id;
+        std::string nombre;
+
+        while (archivoEntrada >> id >> nombre) {
+            clientes.push_back(new Cliente(id, nombre));
+        }
+
+        archivoEntrada.close();
+    } else {
+        std::cerr << "Error al abrir el archivo de clientes para leer.\n";
+    }
+
+    return clientes;
+}
+
+void imprimirClientesDesdeArchivo(const std::string& nombreArchivo) {
+    std::ifstream archivoEntrada(nombreArchivo);
+    if (archivoEntrada.is_open()) {
+        std::cout << "Clientes disponibles en el archivo:\n";
+        std::string linea;
+        while (std::getline(archivoEntrada, linea)) {
+            std::cout << linea << "\n";
+        }
+        archivoEntrada.close();
+    } else {
+        std::cerr << "Error al abrir el archivo de clientes para leer.\n";
+    }
+}
+
+
+
+
 /**
  * @brief Crea y agrega un CDP para un cliente.
  * @param clientes Vector de punteros a clientes.
  */
 
 void CDP::crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes) {
-    // Verifica si hay clientes registrados
+
     if (clientes.empty()) {
         std::cout << "No hay clientes registrados.\n";
         return;
     }
      // Muestra la lista de clientes
     std::cout << "Clientes registrados:\n";
+
     for (const auto& cliente : clientes) {
         std::cout << "ID: " << cliente->obtenerID() << ", Nombre: " << cliente->obtenerNombre() << "\n";
     }
@@ -101,6 +141,7 @@ void CDP::crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes) {
 
         // Informa que el CDP se creó y agregó con éxito
     std::cout << "CDP creado y agregado al cliente con exito.\n";
+
 }
 
 /**
@@ -147,7 +188,7 @@ bool Cliente::asignarID(int id) {
 bool Cliente::esNumeroValido(const std::string& str, int& numero) {
     try {
         size_t pos;
-        long num = std::stol(str, &pos);
+        long num = std::stoi(str, &pos); //stoi convierte la cadena recibida a un entero, pero no acepta caracteres numericos
         if (pos != str.length() || num < 0 || num > 999999999) {
             return false;
         }
@@ -283,6 +324,16 @@ void Cliente::agregarCuentaDolares(CuentaBancaria* cuenta) {
     }
 }
 
+bool contieneDigitos(const std::string& str) {
+    for (char c : str) {
+        if (std::isdigit(c)) {
+            return true;  // Devuelve true si encuentra al menos un dígito
+        }
+    }
+    return false;  // Devuelve false si no se encontraron dígitos
+}
+
+
 /**
  * @brief Muestra el menú de atención al cliente y realiza operaciones según la opción seleccionada.
  * @note Para agregar cuentas o clientes, se solicita información interactivamente al usuario.
@@ -297,7 +348,7 @@ std::vector<Cliente*> clientes;
         std::cout << "\n---BIENVENIDO AL MODO ATENCION---\n"
                   << "1. Crear Cliente\n"
                   << "2. Crear CDP para Cliente\n"
-                  << "3. Mostrar Detalles del Cliente\n"
+                  << "3. Mostrar Detalles del Cliente en un archivo aparte\n"
                   << "4. Agregar cuenta para Cliente\n"
                   << "5. Salir\n"
                   << "Ingrese una opcion para realizar operaciones en su cuenta, o bien, presione 5 para volver al menu principal: ";
@@ -308,49 +359,55 @@ std::vector<Cliente*> clientes;
             case 1: {
                 std::cout << "Ingrese el ID del cliente: ";
                 std::getline(std::cin, entradaID);
-
                 int id;
                 if (Cliente::esNumeroValido(entradaID, id)) {
                     std::cout << "Ingrese el nombre del cliente: ";
                     std::getline(std::cin, nombre);
 
-                    Cliente* nuevoCliente = new Cliente(id, nombre);
-                    clientes.push_back(nuevoCliente);
-                    std::cout << "\nCliente creado con exito.\n";
+                    if (contieneDigitos(nombre)) {
+                        std::cout << "Error: El nombre no debe contener numeros.\n";
+                    }else{
+                        Cliente* nuevoCliente = new Cliente(id, nombre);
+                        clientes.push_back(nuevoCliente);
+                        std::cout << "\nCliente creado con exito.\n";
+                    }
                 } else {
                     std::cout << "ID invalido. Por favor, introduzca un numero de ID valido.\n";
                 }
                 break;
             }
+
             case 2: {
                 CDP::crearYAgregarCDPParaCliente(clientes);
+                clientes[clientes.size() - 1]->incrementarContadorCDPs();
                 break;
+                clientes[0]->incrementarContadorCDPs();
             }
             case 3: {
-                for (auto& cliente : clientes) {
-                    std::cout << "\nID: " << cliente->obtenerID() << ", Nombre: " << cliente->obtenerNombre() << "\n";
+                // Abrir el archivo en modo de escritura
+                std::ofstream archivo("clientes.txt",std::ios_base::app);
+
+                if (archivo.is_open()) {
+                    for (auto& cliente : clientes) {
+                        // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
+                        archivo << "ID:" << cliente -> obtenerID() << ", Nombre:" << cliente->obtenerNombre() <<", CDPs activos:"<< cliente->obtenerContadorCDPs() <<
+                        ", Monto CDP:\n";
+                    }
+                    archivo.close();  // Cerrar el archivo después de escribir
+                    std::cout << "Informacion de clientes guardada en 'clientes.txt'.\n";
+                } else {
+                    std::cout << "Error al abrir el archivo para escribir.\n";
                 }
-                if (clientes.empty()) {
-                    std::cout << "No hay clientes para mostrar.\n";
-                }
-                break;
+
+                    break;
             }
             case 4: {
+                // Leer el archivo .txt antes de agregar la cuenta al banco
                 Cliente::agregarCuentaABanco(clientes);
-                break;
             }
             case 5:
                 std::cout << "Volviendo al menu principal...\n";
-                int monedaOpcion;//Aca se guarda la informacion en un archivo .txt
-                if (Cliente::archivoClientes.is_open()) {
-                for (auto& cliente : clientes) {
-                    std::cout << "\nID: " << cliente->obtenerID() << ", Nombre: " << cliente->obtenerNombre() << "\n";
-                }
-                
-                } else {
-                    std::cerr << "Error al abrir el archivo de clientes para escritura.\n";
-                }
-                break;
+
             Cliente::archivoClientes.close();  // Cierra el archivo después de escribir
                 
             default:

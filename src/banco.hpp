@@ -60,6 +60,13 @@ public:
      * @param clientes Vector de punteros a objetos de la clase Cliente.
      */
     static void crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes);
+    std::string obtenerInformacion() const {
+        return "Titular: " + titular +
+               "\nMonto: " + std::to_string(monto) +
+               "\nTasa de Interés: " + std::to_string(tasaInteres) +
+               "\nPlazo en Días: " + std::to_string(plazoDias) +
+               "\nMoneda: " + moneda;
+    }
 };
 
 /**
@@ -68,6 +75,13 @@ public:
 class Cliente {
 
 public:
+    int contadorCDPs = 0;
+    int obtenerContadorCDPs() const {
+            return contadorCDPs;
+        }
+    void incrementarContadorCDPs() {
+        contadorCDPs++;
+    }
     static std::set<int> idsAsignados; ///< Conjunto de IDs asignados a clientes.
     int id; ///< ID del cliente.
     std::string nombre; ///< Nombre del cliente.
