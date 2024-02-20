@@ -6,6 +6,7 @@
 #include <memory>
 #include <ctime>
 #include <iomanip>
+#include <sstream>
 
 
 
@@ -26,7 +27,7 @@ void Cliente::agregarCDP(const CDP &nuevoCDP) {
  */
 
 void CDP::crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes) {
-
+    
     if (clientes.empty()) {
         std::cout << "No hay clientes registrados.\n";
         return;
@@ -61,10 +62,12 @@ void CDP::crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes) {
     int monedaOpcion;
     std::cin >> monedaOpcion;
     std::string moneda = (monedaOpcion == 1) ? "Colones" : "Dolares";
+    std::cout<<"Usted selecciono: "<< monedaOpcion<<"\n";
 
     std::cout << "Ingrese el monto del CDP: ";
     double monto;
     std::cin >> monto;
+    std::cout<<"Su monto es de: "<< monto<<"\n";
 
     // Muestra las opciones de CDP según la moneda
     int plazoDias;
@@ -108,7 +111,32 @@ void CDP::crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes) {
             CDP nuevoCDP(clienteSeleccionado->obtenerNombre(), monto, tasaInteres, plazoDias, moneda);
             clienteSeleccionado->agregarCDP(nuevoCDP);
 
+
+            
+
         // Informa que el CDP se creó y agregó con éxito
+        // Abrir el archivo en modo de escritura
+        std::ofstream archivo("registro.txt",std::ios_base::app);
+        if (archivo.is_open()) {
+            
+            for (auto& cliente : clientes) {
+                std::string nombreMoneda = (monedaOpcion == 1) ? "colones" : "dólares";
+                std::ostringstream ss;
+                std::time_t tiempo_actual = std::time(nullptr);
+                std::tm* tiempo_info = std::localtime(&tiempo_actual);
+                archivo << "-----------------------------------------------------------------------------" << "\n";
+                archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
+                // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
+                archivo << "El cliente de ID: " << cliente -> obtenerID() << ",abrió un CDP con un monto de " <<std::fixed << std::setprecision(2) <<monto <<" "<<nombreMoneda<<"\n"
+                <<"a un plazo de "<< plazoDias <<" días y con " << tasaInteres<<"% de interés."
+                "\n";
+                archivo << "-----------------------------------------------------------------------------" << "\n";
+            }
+            archivo.close();  // Cerrar el archivo después de escribir
+            std::cout << "Informacion de clientes guardada en 'clientes.txt'.\n";
+        } else {
+            std::cout << "Error al abrir el archivo para escribir.\n";
+        }
     std::cout << "CDP creado y agregado al cliente con exito.\n";
 
 }
@@ -231,6 +259,11 @@ void Prestamo::crearYAgregarPrestamos(std::vector<Cliente*>& clientes) {
 }
 
 
+
+
+
+
+
 /**
  * @brief Se almacenan los IDs asignados a clientes.
  */
@@ -320,6 +353,12 @@ void Cliente::agregarCuentaABanco(std::vector<Cliente*>& clientes) {
         std::cout << "No hay clientes registrados.\n";
         return;
     }
+    // Muestra la lista de clientes
+    std::cout << "Clientes registrados:\n";
+
+    for (const auto& cliente : clientes) {
+        std::cout << "ID: " << cliente->obtenerID() << ", Nombre: " << cliente->obtenerNombre() << "\n";
+    }
     
     // Solicitar al usuario el ID del cliente al que se le desea agregar una cuenta
     std::cout << "Ingrese el ID del cliente a quien desea agregar una cuenta: ";
@@ -377,6 +416,31 @@ void Cliente::agregarCuentaABanco(std::vector<Cliente*>& clientes) {
         std::cerr << "Moneda no reconocida. La cuenta no fue agregada." << std::endl;
         delete nuevaCuenta; // Liberar memoria en caso de moneda no reconocida
     }
+    // Abrir el archivo en modo de escritura
+        std::ofstream archivo("registro.txt",std::ios_base::app);
+        if (archivo.is_open()) {
+            
+            for (auto& cliente : clientes) {
+                std::string nombreMoneda = (opcionMoneda == 1) ? "colones" : "dólares";
+                std::ostringstream ss;
+                std::time_t tiempo_actual = std::time(nullptr);
+                std::tm* tiempo_info = std::localtime(&tiempo_actual);
+                archivo << "-----------------------------------------------------------------------------" << "\n";
+                archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
+                // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
+                archivo << "El cliente de ID: " << cliente -> obtenerID() << ",abrió una cuenta, de numero: "<< numeroCuenta 
+                <<" con un monto de " <<std::fixed << std::setprecision(2) <<saldoInicial <<" "<<nombreMoneda<<"\n";
+                archivo << "-----------------------------------------------------------------------------" << "\n";
+            }
+            archivo.close();  // Cerrar el archivo después de escribir
+            std::cout << "Informacion de clientes guardada en 'clientes.txt'.\n";
+        } else {
+            std::cout << "Error al abrir el archivo para escribir.\n";
+        }
+
+
+
+
 }
 
 
@@ -425,54 +489,6 @@ bool contieneDigitos(const std::string& str) {
     return false;  // Devuelve false si no se encontraron dígitos
 }
 
-std::vector<std::string> extraerNombresDesdeArchivo(const std::string& nombreArchivo) {
-    std::ifstream archivo(nombreArchivo);
-
-    if (!archivo.is_open()) {
-        std::cerr << "Error al abrir el archivo " << nombreArchivo << std::endl;
-        return {};  // Devolver un vector vacío en caso de error
-    }
-
-    std::vector<std::string> nombresExtraidos;
-    std::vector<Cliente*> clientes;
-    std::string linea;
-
-    while (std::getline(archivo, linea)) {
-        size_t posNombre = linea.find("Nombre:");
-        if (posNombre != std::string::npos) {
-            // Encontrar la cadena "Nombre:" en la línea
-            // Extraer el nombre que sigue después de "Nombre:"
-            std::string nombreExtraido = linea.substr(posNombre + 8);
-            // Buscar la coma que separa el nombre del resto de la línea y truncar ahí
-            size_t posComa = nombreExtraido.find(',');
-            if (posComa != std::string::npos) {
-                nombreExtraido = nombreExtraido.substr(0, posComa);
-            }
-            std::cout << "Nombre extraído: " << nombreExtraido << std::endl;
-
-            // Crear un nuevo objeto Cliente y agregarlo al vector global clientes
-            Cliente* nuevoCliente = new Cliente();  // Ajusta la creación del objeto según tu implementación
-            // Asignar el nombre extraído al nuevo cliente
-            // Esto asume que la clase Cliente tiene un método para establecer el nombre
-            nuevoCliente->obtenerNombre();
-            // Agregar el nuevo cliente al vector global clientes
-            clientes.push_back(nuevoCliente);
-
-            // Almacenar el nombre extraído en el vector local
-            nombresExtraidos.push_back(nombreExtraido);
-        }
-    }
-
-    archivo.close();
-
-    return nombresExtraidos;
-}
-
-
-
-
-
-
 
 /**
  * @brief Muestra el menú de atención al cliente y realiza operaciones según la opción seleccionada.
@@ -483,13 +499,13 @@ std::ofstream Cliente::archivoClientes("clientes.txt", std::ios::app);
 void mostrarMenuAtencion(){
 std::vector<Cliente*> clientes;
     std::string entradaID, nombre;
-    int id, opcion = 0;
+    int opcion = 0;
     while (opcion != 7) {
         std::cout << "\n---BIENVENIDO AL MODO ATENCION---\n"
                   << "1. Crear Cliente\n"
                   << "2. Crear CDP para Cliente\n"
-                  << "3. Mostrar Detalles del Cliente en un archivo aparte\n"
-                  << "4. Agregar cuenta para Cliente\n"
+                  << "3. Agregar cuenta para Cliente\n"
+                  << "4. Mostrar Detalles del Cliente en un archivo aparte\n"
                   << "5. Realizar transferencias entre cuentas\n"
                   << "6. Agregar Prestamo\n"
                   << "7. Salir\n"
@@ -527,6 +543,13 @@ std::vector<Cliente*> clientes;
                 
             }
             case 3: {
+                Cliente::agregarCuentaABanco(clientes);
+                clientes[clientes.size() - 1]->incrementarContadorCuentas();
+                break;
+                clientes[0]->incrementarContadorCDPs();
+                    break;
+            }
+            case 4: {
                 // Abrir el archivo en modo de escritura
                 std::ofstream archivo("clientes.txt",std::ios_base::app);
                 if (archivo.is_open()) {
@@ -538,7 +561,7 @@ std::vector<Cliente*> clientes;
                         archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
                         // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
                         archivo << "ID: " << cliente -> obtenerID() << ", Nombre: " << cliente->obtenerNombre() <<", CDPs activos: "<< cliente->obtenerContadorCDPs() <<
-                        "\n";
+                        ", Cuentas activas:" << cliente ->obtenerContadorCuentas() <<"\n";
 
                         archivo << "-----------------------------------------------------------------" << "\n";
                     }
@@ -547,22 +570,10 @@ std::vector<Cliente*> clientes;
                 } else {
                     std::cout << "Error al abrir el archivo para escribir.\n";
                 }
-
-                    break;
-            }
-            case 4: {
-                Cliente::agregarCuentaABanco(clientes);
                 break;
             }
             case 5: {
-                std::vector<std::string> nombresExtraidos = extraerNombresDesdeArchivo("clientes.txt");
-                if (!nombresExtraidos.empty()) {
-                    // Hacer algo con los nombres extraídos, por ejemplo, imprimirlos
-                    std::cout << "Nombres extraídos:" << std::endl;
-                    for (const auto& nombre : nombresExtraidos) {
-                        std::cout << "- " << nombre << std::endl;
-                    }
-                }
+              
             }
             case 6: {
                 Prestamo::crearYAgregarPrestamos(clientes);
@@ -572,8 +583,7 @@ std::vector<Cliente*> clientes;
                 std::cout << "Volviendo al menu principal...\n";
                 break;
             }
-
-                
+   
 
             Cliente::archivoClientes.close();  // Cierra el archivo después de escribir
                 
