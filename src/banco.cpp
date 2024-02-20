@@ -387,10 +387,6 @@ void CDP::crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes) {
             // Crea un nuevo CDP y lo agrega al cliente
             CDP nuevoCDP(clienteSeleccionado->obtenerNombre(), monto, tasaInteres, plazoDias, moneda);
             clienteSeleccionado->agregarCDP(nuevoCDP);
-
-
-            
-
         // Informa que el CDP se creó y agregó con éxito
         // Abrir el archivo en modo de escritura
         std::ofstream archivo("registro.txt",std::ios_base::app);
@@ -534,13 +530,6 @@ void Prestamo::crearYAgregarPrestamos(std::vector<Cliente*>& clientes) {
     // Informa que el Prestamo se creó y agregó con éxito
     std::cout << "Prestamo creado y agregado al cliente con exito.\n";
 }
-
-
-
-
-
-
-
 /**
  * @brief Se almacenan los IDs asignados a clientes.
  */
@@ -663,7 +652,6 @@ void Cliente::agregarCuentaABanco(std::vector<Cliente*>& clientes) {
     
     // Solicitar al usuario información para la nueva cuenta
     std::string numeroCuenta, moneda;
-    double saldoInicial;
     std::cout << "Ingrese el numero de cuenta: ";
     std::getline(std::cin, numeroCuenta);
 
@@ -678,9 +666,6 @@ void Cliente::agregarCuentaABanco(std::vector<Cliente*>& clientes) {
         if (esOpcionValida(entradaMoneda, opcionMoneda)) break;
         else std::cout << "Opcion no valida. Intente de nuevo.\n";
     }
-
-    std::string moneda = (opcionMoneda == 1) ? "CRC" : "USD";
-
     std::string entradaSaldo;
     std::cout << "Ingrese el saldo inicial de la cuenta: ";
     std::getline(std::cin, entradaSaldo);
@@ -722,9 +707,6 @@ void Cliente::agregarCuentaABanco(std::vector<Cliente*>& clientes) {
         } else {
             std::cout << "Error al abrir el archivo para escribir.\n";
         }
-
-
-
 
 }
 
@@ -791,7 +773,7 @@ std::vector<Cliente*> clientes;
                   << "2. Crear CDP para Cliente\n"
                   << "3. Agregar cuenta para Cliente\n"
                   << "4. Mostrar Detalles del Cliente en un archivo aparte\n"
-                  << "5. Realizar transferencias entre cuentas\n"
+                  << "5. Realizar Transacciones\n"
                   << "6. Agregar Prestamo\n"
                   << "7. Salir\n"
                   << "Ingrese una opcion para realizar operaciones en su cuenta, o bien, presione 7 para volver al menu principal: ";
@@ -862,8 +844,163 @@ std::vector<Cliente*> clientes;
                 break;
             }
             case 5: {
-              
+                int transaccionOpcion;
+                std::cout << "Seleccione la operacion a realizar:\n"
+                        << "1. Transferir entre cuentas de diferentes clientes\n"
+                        << "2. Transferir dinero entre cuentas del mismo cliente\n"
+                        << "3. Depositar dinero en una cuenta\n"
+                        << "4. Retirar dinero de una cuenta\n"
+                        << "5. Salir\n"
+                        << "Ingrese su opcion: ";
+                std::cin >> transaccionOpcion;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                // Si el usuario elige salir, regresa al menú principal
+                if (transaccionOpcion == 5) {
+                    std::cout << "\nVolviendo al menu principal.\n";
+                    break;
+                }
+
+                std::string inputID;
+                std::cout << "Ingrese el ID del cliente que realizara la transaccion: ";
+                std::getline(std::cin, inputID);
+
+                int clienteID;
+                if (Cliente::esNumeroValido(inputID, clienteID)) {
+                    Cliente* clienteSeleccionado = nullptr;
+                    for (auto& cliente : clientes) {
+                        if (cliente->obtenerID() == clienteID) {
+                            clienteSeleccionado = cliente;
+                            break;
+                        }
+                    }
+                    if (!clienteSeleccionado) {
+                        std::cout << "Cliente no encontrado.\n";
+                        break;
+                    }
+
+                    switch (transaccionOpcion) {
+                        case 1: {
+                            if (CuentaBancaria::realizarTransferenciaEntreCuentas(clientes, clienteSeleccionado)) {
+                                std::cout << "Transferencia realizada con exito.\n";
+                            } else {
+                                std::cout << "La transferencia fallo.\n";
+                            }
+                            break;
+                        }
+                        case 2: {
+                            // Opcion para transferencias entre cuentas del mismo cliente
+                            std::string entradaEleccion;
+                            std::cout << "Seleccione la operacion a realizar:\n"
+                                    << "1. De la cuenta de dolares a la de colones\n"
+                                    << "2. De la cuenta de colones a la de dolares\n"
+                                    << "3. Salir\n"
+                                    << "Ingrese su opcion: ";
+                            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                            std::getline(std::cin, entradaEleccion); // Captura la elección como string
+
+                            int eleccionTransferencia = 0;
+                            // Intenta convertir la entrada a un numero y verifica si es valida
+                            if (!Cliente::esNumeroValido(entradaEleccion, eleccionTransferencia) || eleccionTransferencia < 1 || eleccionTransferencia > 3) {
+                                std::cout << "Opcion no valida. Por favor, ingrese un numero valido.\n";
+                                break;
+                            }
+
+                            if (eleccionTransferencia == 3) {
+                                std::cout << "\nVolviendo al menu principal.\n";
+                                break;
+                            }
+                            // Se solicita el monto a transferir
+                            std::string entradaMonto, entradaTipoDeCambio;
+                            std::cout << "Ingrese el monto a transferir: ";
+                            std::getline(std::cin, entradaMonto);
+                            // Se verifica que el monto sea valido
+                            double monto = verificarMonto(entradaMonto);
+                            if (monto <= 0) {
+                                std::cerr << "Entrada no valida. Por favor, introduzca un monto positivo." << std::endl;
+                                break;
+                            }
+                            // Se solicita el tipo de cambio
+                            std::cout << "Ingrese el tipo de cambio actual: ";
+                            std::getline(std::cin, entradaTipoDeCambio);
+                            // Se verifica que el tipo de cambio sea valido
+                            double tipoDeCambio = verificarMonto(entradaTipoDeCambio);
+                            if (tipoDeCambio <= 0) {
+                                std::cerr << "Entrada no valida. Por favor, introduzca un valor positivo para el tipo de cambio." << std::endl;
+                                break;
+                            }
+
+
+                            switch (eleccionTransferencia) {
+                                case 1: // De dólares a colones
+                                    if (clienteSeleccionado->cuentaDolares && clienteSeleccionado->cuentaColones) {
+                                        clienteSeleccionado->cuentaDolares->transferirDolaresAColones(monto, tipoDeCambio, *clienteSeleccionado->cuentaColones);
+                                    } else {
+                                        std::cerr << "El cliente no tiene configuradas las cuentas necesarias para realizar esta operacion." << std::endl;
+                                    }
+                                    break;
+                                case 2: // De colones a dólares
+                                    if (clienteSeleccionado->cuentaColones && clienteSeleccionado->cuentaDolares) {
+                                        clienteSeleccionado->cuentaColones->transferirColonesADolares(monto, tipoDeCambio, *clienteSeleccionado->cuentaDolares);
+                                    } else {
+                                        std::cerr << "El cliente no tiene configuradas las cuentas necesarias para realizar esta operacion." << std::endl;
+                                    }
+                                    break;
+                                default:
+                                    std::cout << "Opcion no valida." << std::endl;
+                                    break;
+                            }
+                            break;
+                        }
+                        case 3: {
+                            // Depositar dinero en una cuenta
+                            std::string entradaMonto;
+                            std::cout << "Ingrese el monto a depositar: ";
+                            // La entrada se toma como string
+                            std::cin >> entradaMonto;
+
+                            // Seleccionar la cuenta (Colones o Dolares)
+                            int tipoCuenta;
+                            std::cout << "Seleccione el tipo de cuenta para el deposito (1: Colones, 2: Dolares): ";
+                            std::cin >> tipoCuenta;
+                            if (tipoCuenta == 1 && clienteSeleccionado->cuentaColones) {
+                                clienteSeleccionado->cuentaColones->depositar(entradaMonto);
+                            } else if (tipoCuenta == 2 && clienteSeleccionado->cuentaDolares) {
+                                clienteSeleccionado->cuentaDolares->depositar(entradaMonto);
+                            } else {
+                                std::cerr << "Cuenta no disponible o monto no valido." << std::endl;
+                            }
+                            break;
+                        }
+                        case 4: {
+                            // Retirar dinero de una cuenta
+                            std::string entradaMonto;
+                            std::cout << "Ingrese el monto a retirar: ";
+                            // La entrada se toma como string para su uso
+                            std::cin >> entradaMonto;
+
+                            // Se selecciona la cuenta (Colones o Dolares)
+                            int tipoCuenta;
+                            std::cout << "Seleccione el tipo de cuenta para el retiro (1: Colones, 2: Dolares): ";
+                            std::cin >> tipoCuenta;
+                            if (tipoCuenta == 1 && clienteSeleccionado->cuentaColones) {
+                                clienteSeleccionado->cuentaColones->retirar(entradaMonto);
+                            } else if (tipoCuenta == 2 && clienteSeleccionado->cuentaDolares) {
+                                clienteSeleccionado->cuentaDolares->retirar(entradaMonto);
+                            } else {
+                                std::cerr << "Cuenta no disponible o monto no valido." << std::endl;
+                            }
+                            break;
+                        }
+                        default:
+                            std::cout << "Opcion no valida." << std::endl;
+                            break;
+                    }
+                } else {
+                    std::cout << "ID de cliente no valido.\n";
+                }
+                break;
             }
+            
             case 6: {
                 Prestamo::crearYAgregarPrestamos(clientes);
                 break;
@@ -872,7 +1009,7 @@ std::vector<Cliente*> clientes;
                 std::cout << "Volviendo al menu principal...\n";
                 break;
             }
-   
+        }
         }
             Cliente::archivoClientes.close();  // Cierra el archivo después de escribir
-        }
+}
