@@ -26,77 +26,7 @@ public:
     CuentaBancaria(std::string titular, std::string numeroCuenta, std::string moneda, double saldoInicial = 0.0)
     : titular(titular), numeroCuenta(numeroCuenta), saldo(saldoInicial), moneda(moneda) {}
 
-    /**
-     * @brief Deposita una cantidad de dinero en la cuenta.
-     * 
-     * @param cantidad La cantidad de dinero a depositar.
-     */
-    void depositar(const std::string& entrada);
-
-    /**
-     * @brief Retira una cantidad de dinero de la cuenta si hay fondos suficientes.
-     * 
-     * @param cantidad La cantidad de dinero a retirar.
-     * @return true Si el retiro fue exitoso.
-     * @return false Si los fondos son insuficientes.
-     */
-    bool retirar(const std::string& entrada);
-
-    /**
-     * @brief Transfiere una cantidad de dinero de esta cuenta (en dólares) a una cuenta en colones, aplicando el tipo de cambio.
-     * 
-     * @param cantidad La cantidad de dólares a transferir.
-     * @param tipoDeCambio El tipo de cambio actual de dólares a colones.
-     * @param cuentaColones Referencia a la cuenta de colones destino.
-     */
-    void transferirDolaresAColones(double cantidad, double tipoDeCambio, CuentaBancaria& cuentaColones);
-
-    /**
-     * @brief Transfiere una cantidad de dinero de esta cuenta (en colones) a una cuenta en dólares, aplicando el tipo de cambio.
-     * 
-     * @param cantidad La cantidad de colones a transferir.
-     * @param tipoDeCambio El tipo de cambio actual de colones a dólares.
-     * @param cuentaDolares Referencia a la cuenta de dólares destino.
-     */
-    void transferirColonesADolares(double cantidad, double tipoDeCambio, CuentaBancaria& cuentaDolares);
-
-    /**
-     * @brief Realiza una transferencia de dinero entre dos cuentas, aplicando conversión de moneda si es necesario.
-     * 
-     * @param cuentaOrigen Referencia a la cuenta bancaria de origen.
-     * @param cuentaDestino Referencia a la cuenta bancaria destino.
-     * @param cantidad La cantidad de dinero a transferir.
-     * @param tipoDeCambio El tipo de cambio a aplicar si es necesario convertir entre monedas.
-     * @param conversionNecesaria Indica si es necesaria la conversión de moneda.
-     */
-    static void transferirAotraPersonaConConversion(CuentaBancaria& cuentaOrigen, CuentaBancaria& cuentaDestino, double cantidad, double tipoDeCambio, bool conversionNecesaria);
-
-    /**
-     * @brief Realiza una transferencia entre cuentas pertenecientes a diferentes clientes, facilitando también la conversión de moneda si es necesario.
-     * 
-     * @param clientes Referencia al vector que contiene todos los clientes del banco.
-     * @param clienteSeleccionado Puntero al cliente que realiza la transferencia.
-     * @return true Si la transferencia se realiza con éxito.
-     * @return false Si la transferencia falla por cualquier motivo.
-     */
-    static bool realizarTransferenciaEntreCuentas(std::vector<Cliente*>& clientes, Cliente* clienteSeleccionado);
-
-    /**
-     * @brief Obtiene el saldo del cliente.
-     * @return Saldo del cliente.
-     */
-    double obtenerSaldo() const {
-        return saldo;
-    }
-    /**
-     * @brief Actualiza el saldo del cliente.
-     * @return El saldo actualizado del cliente.
-     */
-    void actualizarSaldo(double nuevoSaldo) {
-        this->saldo = nuevoSaldo;
-    }
-
-private:
+protected:
     std::string titular; ///< Nombre del titular de la cuenta.
     std::string numeroCuenta; ///< Número único de la cuenta.
     double saldo; ///< Saldo actual de la cuenta.
