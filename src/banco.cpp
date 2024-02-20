@@ -1,4 +1,5 @@
 #include "banco.hpp"
+#include "funciones.hpp"
 #include <iostream>
 #include <vector>
 #include <limits>
@@ -458,25 +459,51 @@ bool contieneDigitos(const std::string& str) {
     return false;  // Devuelve false si no se encontraron dígitos
 }
 
+void leerArchivo(const std::string& nombreArchivo) {
+    // Crear un objeto ifstream para leer el archivo
+    std::ifstream archivo(nombreArchivo);
+
+    // Verificar si el archivo se abrió correctamente
+    if (!archivo.is_open()) {
+        std::cerr << "Error al abrir el archivo " << nombreArchivo << std::endl;
+        return;
+    }
+
+    // Leer y mostrar cada línea del archivo
+    std::string linea;
+    while (std::getline(archivo, linea)) {
+        std::cout << linea << std::endl;
+    }
+
+    // Cerrar el archivo después de su uso
+    archivo.close();
+}
+
+
+
+
+
 
 /**
  * @brief Muestra el menú de atención al cliente y realiza operaciones según la opción seleccionada.
  * @note Para agregar cuentas o clientes, se solicita información interactivamente al usuario.
  */
+
 std::ofstream Cliente::archivoClientes("clientes.txt", std::ios::app);
 void mostrarMenuAtencion(){
 std::vector<Cliente*> clientes;
     std::string entradaID, nombre;
     int id, opcion = 0;
-    while (opcion != 5) {
+    while (opcion != 7) {
         std::cout << "\n---BIENVENIDO AL MODO ATENCION---\n"
                   << "1. Crear Cliente\n"
                   << "2. Crear CDP para Cliente\n"
                   << "3. Mostrar Detalles del Cliente en un archivo aparte\n"
                   << "4. Agregar cuenta para Cliente\n"
-                  << "5. Agregar Prestamo\n"
-                  << "6. Salir\n"
-                  << "Ingrese una opcion para realizar operaciones en su cuenta, o bien, presione 5 para volver al menu principal: ";
+                  << "5. Realizar transferencias entre cuentas\n"
+                  << "6. Agregar Prestamo\n"
+                  << "7. Salir\n"
+                  << "Ingrese una opcion para realizar operaciones en su cuenta, o bien, presione 7 para volver al menu principal: ";
         std::cin >> opcion;
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
@@ -541,8 +568,16 @@ std::vector<Cliente*> clientes;
                 Prestamo::crearYAgregarPrestamos(clientes);
                 break;
             }
-            case 6:
+            case 6: {
+                Prestamo::crearYAgregarPrestamos(clientes);
+                break;
+            }
+            case 7: {
                 std::cout << "Volviendo al menu principal...\n";
+                break;
+            }
+
+                
 
             Cliente::archivoClientes.close();  // Cierra el archivo después de escribir
                 

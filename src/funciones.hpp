@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <cstdlib>
+#include <vector>
 
 /**
  * @brief Se define esta estructura BASE, en la cual se monta el MAIN, para ejecutar 
@@ -14,7 +15,7 @@ struct Base
     
 };
 
-
+void leerArchivo(const std::string& nombreArchivo);
 
 /**
  * @brief Muestra el menú principal del programa.
