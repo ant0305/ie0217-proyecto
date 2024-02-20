@@ -64,7 +64,7 @@ public:
     
 
 };
-
+std::vector<std::string> extraerNombresDesdeArchivo(std::vector<Cliente*>& clientes);
 /**
  * @brief Clase que representa un préstamo.
  */
@@ -128,6 +128,8 @@ public:
     void incrementarContadorCuentas() {
         contadorCuentas++;
     }
+    static std::vector<Cliente*>& obtenerClientes();
+    static std::ofstream& obtenerArchivoClientes();
     static std::set<int> idsAsignados; ///< Conjunto de IDs asignados a clientes.
     int id; ///< ID del cliente.
     std::string nombre; ///< Nombre del cliente.
@@ -136,6 +138,12 @@ public:
     CDP* cdp;  ///< Puntero al Certificado de Depósito a Plazo (CDP) del cliente.
     static std::ofstream archivoClientes; ///< Flujo de salida para el archivo de clientes.
     Prestamo* prestamo; ///< Puntero al Prestamo del cliente.
+    
+
+    /**
+     * @brief Constructor sin parámetros de la clase Cliente.
+     */
+    Cliente() : id(0), nombre("") {}
 
 
     /**

@@ -7,6 +7,8 @@
 #include <ctime>
 #include <iomanip>
 
+
+
 /**
  * @brief Agrega un CDP a la lista de CDPs del cliente.
  * @param nuevoCDP Referencia al nuevo CDP a agregar.
@@ -15,42 +17,6 @@
 void Cliente::agregarCDP(const CDP &nuevoCDP) {
     cdps.push_back(nuevoCDP);
 }
-
-// Función para cargar clientes desde un archivo
-std::vector<Cliente*> cargarClientesDesdeArchivo(const std::string& nombreArchivo) {
-    std::vector<Cliente*> clientes;
-
-    std::ifstream archivoEntrada(nombreArchivo);
-    if (archivoEntrada.is_open()) {
-        int id;
-        std::string nombre;
-
-        while (archivoEntrada >> id >> nombre) {
-            clientes.push_back(new Cliente(id, nombre));
-        }
-
-        archivoEntrada.close();
-    } else {
-        std::cerr << "Error al abrir el archivo de clientes para leer.\n";
-    }
-
-    return clientes;
-}
-
-void imprimirClientesDesdeArchivo(const std::string& nombreArchivo) {
-    std::ifstream archivoEntrada(nombreArchivo);
-    if (archivoEntrada.is_open()) {
-        std::cout << "Clientes disponibles en el archivo:\n";
-        std::string linea;
-        while (std::getline(archivoEntrada, linea)) {
-            std::cout << linea << "\n";
-        }
-        archivoEntrada.close();
-    } else {
-        std::cerr << "Error al abrir el archivo de clientes para leer.\n";
-    }
-}
-
 
 
 
@@ -459,25 +425,49 @@ bool contieneDigitos(const std::string& str) {
     return false;  // Devuelve false si no se encontraron dígitos
 }
 
-void leerArchivo(const std::string& nombreArchivo) {
-    // Crear un objeto ifstream para leer el archivo
+std::vector<std::string> extraerNombresDesdeArchivo(const std::string& nombreArchivo) {
     std::ifstream archivo(nombreArchivo);
 
-    // Verificar si el archivo se abrió correctamente
     if (!archivo.is_open()) {
         std::cerr << "Error al abrir el archivo " << nombreArchivo << std::endl;
-        return;
+        return {};  // Devolver un vector vacío en caso de error
     }
 
-    // Leer y mostrar cada línea del archivo
+    std::vector<std::string> nombresExtraidos;
+    std::vector<Cliente*> clientes;
     std::string linea;
+
     while (std::getline(archivo, linea)) {
-        std::cout << linea << std::endl;
+        size_t posNombre = linea.find("Nombre:");
+        if (posNombre != std::string::npos) {
+            // Encontrar la cadena "Nombre:" en la línea
+            // Extraer el nombre que sigue después de "Nombre:"
+            std::string nombreExtraido = linea.substr(posNombre + 8);
+            // Buscar la coma que separa el nombre del resto de la línea y truncar ahí
+            size_t posComa = nombreExtraido.find(',');
+            if (posComa != std::string::npos) {
+                nombreExtraido = nombreExtraido.substr(0, posComa);
+            }
+            std::cout << "Nombre extraído: " << nombreExtraido << std::endl;
+
+            // Crear un nuevo objeto Cliente y agregarlo al vector global clientes
+            Cliente* nuevoCliente = new Cliente();  // Ajusta la creación del objeto según tu implementación
+            // Asignar el nombre extraído al nuevo cliente
+            // Esto asume que la clase Cliente tiene un método para establecer el nombre
+            nuevoCliente->obtenerNombre();
+            // Agregar el nuevo cliente al vector global clientes
+            clientes.push_back(nuevoCliente);
+
+            // Almacenar el nombre extraído en el vector local
+            nombresExtraidos.push_back(nombreExtraido);
+        }
     }
 
-    // Cerrar el archivo después de su uso
     archivo.close();
+
+    return nombresExtraidos;
 }
+
 
 
 
@@ -547,7 +537,7 @@ std::vector<Cliente*> clientes;
                         archivo << "-----------------------------------------------------------------" << "\n";
                         archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
                         // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
-                        archivo << "ID:" << cliente -> obtenerID() << ", Nombre:" << cliente->obtenerNombre() <<", CDPs activos:"<< cliente->obtenerContadorCDPs() <<
+                        archivo << "ID: " << cliente -> obtenerID() << ", Nombre: " << cliente->obtenerNombre() <<", CDPs activos: "<< cliente->obtenerContadorCDPs() <<
                         "\n";
 
                         archivo << "-----------------------------------------------------------------" << "\n";
@@ -565,8 +555,14 @@ std::vector<Cliente*> clientes;
                 break;
             }
             case 5: {
-                Prestamo::crearYAgregarPrestamos(clientes);
-                break;
+                std::vector<std::string> nombresExtraidos = extraerNombresDesdeArchivo("clientes.txt");
+                if (!nombresExtraidos.empty()) {
+                    // Hacer algo con los nombres extraídos, por ejemplo, imprimirlos
+                    std::cout << "Nombres extraídos:" << std::endl;
+                    for (const auto& nombre : nombresExtraidos) {
+                        std::cout << "- " << nombre << std::endl;
+                    }
+                }
             }
             case 6: {
                 Prestamo::crearYAgregarPrestamos(clientes);

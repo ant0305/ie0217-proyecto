@@ -15,7 +15,7 @@ struct Base
     
 };
 
-void leerArchivo(const std::string& nombreArchivo);
+
 
 /**
  * @brief Muestra el menú principal del programa.
