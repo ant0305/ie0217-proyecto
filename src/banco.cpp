@@ -7,9 +7,286 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include <chrono>
+#include    <algorithm>
+
+/**
+ * @brief Verifica y convierte una cadena de texto en un valor numerico.
+ * 
+ * Esta funcion intenta convertir una cadena de texto en un valor numerico.
+ * Si la conversion es exitosa devuelve ese valor.
+ * 
+ * @param entrada La cadena de texto que se intentara convertir en un valor numerico.
+ * @return El valor numerico si es valido, -1 si hay un error.
+ */
+double verificarMonto(const std::string& entrada) {
+    try {
+        size_t procesado;
+        double monto = std::stod(entrada, &procesado);
+        if (monto > 0 && procesado == entrada.length()) {
+            return monto; // Retorna el monto si es un numero valido y positivo
+        }
+    // No se pudo convertir a double
+    } catch (const std::invalid_argument& e) {
+    // El numero es demasiado grande para caber en un double
+    } catch (const std::out_of_range& e) {
+    }
+    return -1; // Indica un error si la entrada no es valida
+}
+
+/**
+ * @brief Verifica si una cadena de texto representa una opcion valida.
+ * 
+ * Esta función intenta convertir una cadena de texto en un numero entero y verifica si ese numero es 1 o 2.
+ * Si la conversion es exitosa devuelve verdadero.
+ * 
+ * @param entrada La cadena de texto que se intentara convertir en un numero entero.
+ * @param numero Variable de salida para almacenar el numero convertido.
+ * @return true si la cadena representa una opcion valida, false de lo contrario.
+ */
+
+bool esOpcionValida(const std::string& entrada, int& numero) {
+    try {
+        size_t pos = 0;
+        numero = std::stoi(entrada, &pos);
+        // Verificar que toda la cadena se haya convertido y que el numero sea 1 o 2
+        if (pos == entrada.length() && (numero == 1 || numero == 2)) {
+            return true;
+        }
+    } catch (const std::invalid_argument& e) {
+        // Caracteres invalidos
+    } catch (const std::out_of_range& e) {
+        // Numero demasiado grande
+    }
+    return false;
+}
+
+/**
+ * @brief Deposita una cantidad en la cuenta bancaria.
+ * 
+ * @param cantidad Cantidad a depositar.
+ */
+void CuentaBancaria::depositar(const std::string& entrada) {
+    // Se verifica que el monto sea valido 
+    double cantidad = verificarMonto(entrada);
+    if (cantidad > 0) {
+        saldo += cantidad;
+        std::cout << "Deposito realizado con exito. Saldo actual: " << saldo << std::endl;
+    } else {
+        // Si la cantidad no es valida, se muestra un mensaje de error
+        std::cerr << "Entrada no valida. Por favor, introduzca un monto valido." << std::endl;
+    }
+}
+
+/**
+ * @brief Retira una cantidad de la cuenta bancaria.
+ * 
+ * @param cantidad Cantidad a retirar.
+ * @return true si el retiro fue exitoso, false si hay fondos insuficientes.
+ */
+bool CuentaBancaria::retirar(const std::string& entrada) {
+    // Se verifica que la entrada sea valida
+    double cantidad = verificarMonto(entrada);
+
+    if (cantidad < 0) {
+        // Si cantidad no es valida lanza un mensaje de error
+        std::cerr << "Entrada no valida. Por favor, introduzca un monto valido." << std::endl;
+        return false;
+    }
+    // Se verifica si hay fondos suficientes en la cuenta para el retiro
+    if (cantidad <= saldo) {
+        saldo -= cantidad;
+        std::cout << "Retiro realizado con éxito. Saldo actual: " << saldo << std::endl;
+        return true;
+    } else {
+        // Si no hay fondos suficientes, se muestra un mensaje de error y se retorna false
+        std::cerr << "Fondos insuficientes para el retiro." << std::endl;
+        return false;
+    }
+}
 
 
+/**
+ * @brief Transfiere una cantidad de dólares a colones.
+ * 
+ * @param cantidad Cantidad de dolares a transferir.
+ * @param tipoDeCambio Tipo de cambio actual.
+ * @param cuentaColones Cuenta en colones donde se depositarán los colones.
+ */
+void CuentaBancaria::transferirDolaresAColones(double cantidad, double tipoDeCambio, CuentaBancaria& cuentaColones) {
 
+    if(this->obtenerSaldo() >= cantidad) { // Verifica si hay suficientes dolares
+        double montoEnColones = cantidad * tipoDeCambio;
+        this->actualizarSaldo(this->obtenerSaldo() - cantidad); // Retira dolares
+        cuentaColones.actualizarSaldo(cuentaColones.obtenerSaldo() + montoEnColones); // Deposita en colones
+        // Se imprimen mensajes de seguimiento
+        std::cout << "Transferencia completada: $" << cantidad << " convertidos a CRC" << montoEnColones << std::endl;
+        std::cout << "Nuevo saldo en dolares: $" << this->obtenerSaldo() << std::endl;
+        std::cout << "Nuevo saldo en colones: CRC" << cuentaColones.obtenerSaldo() << std::endl;
+    } else {
+        // Mensaje si no hay fondos suficientes
+        std::cerr << "Fondos insuficientes en la cuenta de dolares." << std::endl;
+    }
+}
+
+/**
+ * @brief Transfiere una cantidad de colones a dólares.
+ * 
+ * @param cantidad Cantidad de colones a transferir.
+ * @param tipoDeCambio Tipo de cambio actual.
+ * @param cuentaDolares Cuenta en dólares donde se depositarán los dólares.
+ */
+void CuentaBancaria::transferirColonesADolares(double cantidad, double tipoDeCambio, CuentaBancaria& cuentaDolares) {
+    if(this->obtenerSaldo() >= cantidad) { // Verifica si hay suficientes colones
+        double montoEnDolares = cantidad / tipoDeCambio;
+        this->actualizarSaldo(this->obtenerSaldo() - cantidad); // Retira colones
+        cuentaDolares.actualizarSaldo(cuentaDolares.obtenerSaldo() + montoEnDolares); // Deposita en dolares
+        // Se imprimen mensajes de seguimiento
+        std::cout << "Transferencia completada: CRC" << cantidad << " convertidos a $" << montoEnDolares << std::endl;
+        std::cout << "Nuevo saldo en colones: CRC" << this->obtenerSaldo() << std::endl;
+        std::cout << "Nuevo saldo en dolares: $" << cuentaDolares.obtenerSaldo() << std::endl;
+    } else {
+        // Mensaje si no hay fondos suficientes
+        std::cerr << "Fondos insuficientes en la cuenta de colones." << std::endl;
+    }
+}
+
+/**
+ * @brief Transfiere una cantidad entre cuentas con posible conversion de moneda.
+ * 
+ * @param cuentaOrigen Cuenta de origen.
+ * @param cuentaDestino Cuenta de destino.
+ * @param cantidad Cantidad de dinero a transferir.
+ * @param tipoDeCambio Tipo de cambio actual.
+ * @param conversionNecesaria Indica si se necesita realizar una conversion de moneda.
+ */
+void CuentaBancaria::transferirAotraPersonaConConversion(CuentaBancaria& cuentaOrigen, CuentaBancaria& cuentaDestino, double cantidad, double tipoDeCambio, bool conversionNecesaria) {
+    // Se convierte el monto a string para usarlo como argumento.
+    std::string montoStr = std::to_string(cantidad);
+    std::string montoConvertidoStr;
+
+    if (!conversionNecesaria) {
+        // Si no es necesaria la conversion se tranfiere el monto de forma comun
+        if (cuentaOrigen.retirar(montoStr)) {
+            cuentaDestino.depositar(montoStr);
+            std::cout << "Transferencia completada sin necesidad de conversion." << std::endl;
+        } else {
+            std::cerr << "Fondos insuficientes en la cuenta de origen." << std::endl;
+        }
+    } else {
+        // Calculamos el monto convertido segun la moneda de origen y destino y el tipo de cambio
+        double montoConvertido = (cuentaOrigen.moneda == "USD" && cuentaDestino.moneda == "CRC") ? cantidad * tipoDeCambio : cantidad / tipoDeCambio;
+        montoConvertidoStr = std::to_string(montoConvertido);  // Se convierte el monto a str para usarse en las funciones
+
+        if (cuentaOrigen.retirar(montoStr)) {
+            cuentaDestino.depositar(montoConvertidoStr);
+            // Se muestra un mensaje si la tranferencia se hizo correctamente
+            std::cout << "Transferencia y conversion completadas: " << cantidad << " de " << cuentaOrigen.moneda << " a " << montoConvertido << " en " << cuentaDestino.moneda << std::endl;
+        } else {
+            // Mensaje si  los fondos no son suficientes
+            std::cerr << "Fondos insuficientes para completar la transferencia y conversion." << std::endl;
+        }
+    }
+}
+
+
+/**
+ * @brief Realiza una transferencia entre cuentas de diferentes clientes
+ * 
+ * @param clientes Vector de punteros a los clientes del banco.
+ * @param clienteSeleccionado Cliente que realiza la transferencia.
+ * @return true si la transferencia fue exitosa, false si fallo por alguna razon.
+ */
+bool CuentaBancaria::realizarTransferenciaEntreCuentas(std::vector<Cliente*>& clientes, Cliente* clienteSeleccionado) {
+    std::string entradaIdClienteDestino;
+    std::cout << "Ingrese el ID del cliente destino: ";
+    // Se captura el ID como texto para su posterior verificacion
+    std::getline(std::cin, entradaIdClienteDestino);
+
+    int idClienteDestino = 0;
+    // Verifica si el input es valido utilizando el metodo esNumeroValido
+    if (!Cliente::esNumeroValido(entradaIdClienteDestino, idClienteDestino)) {
+        std::cout << "ID no valido. Por favor, ingrese un numero.\n";
+        return false;
+    }
+    // Busca al cliente destino en el vector de clientes del banco
+    Cliente* clienteDestino = nullptr;
+    for (auto& cliente : clientes) {
+        if (cliente->obtenerID() == idClienteDestino) { // Compara el ID del cliente con el ID proporcionado
+            clienteDestino = cliente;
+            break;
+        }
+    }
+    // Se devuelve un mensaje de error si no se encontro el cliente
+    if (!clienteDestino) {
+        std::cout << "Cliente destino no encontrado.\n";
+        return false;
+    }
+
+    int cuentaOrigenTipo = 0, cuentaDestinoTipo = 0;
+    std::string entrada;
+
+    // Se solicita y valida la cuenta de origen
+    while (true) {
+        std::cout << "Seleccione la cuenta de origen (1 para Dolares, 2 para Colones): ";
+        std::getline(std::cin, entrada);
+        if (esOpcionValida(entrada, cuentaOrigenTipo)) break;
+        else std::cout << "Opcion no valida. Intente de nuevo.\n";
+    }
+
+    // Se solicita y valida la cuenta destino
+    while (true) {
+        std::cout << "Seleccione la cuenta destino (1 para Dolares, 2 para Colones): ";
+        std::getline(std::cin, entrada);
+        if (esOpcionValida(entrada, cuentaDestinoTipo)) break;
+        else std::cout << "Opcion no valida. Intente de nuevo.\n";
+    }
+
+    std::string entradaMonto;
+    std::cout << "Ingrese el monto a transferir: ";
+    std::getline(std::cin, entradaMonto); // Captura el monto como texto
+    // Se verifica si el monto es valido con la funcion verificarMonto
+    double cantidad = verificarMonto(entradaMonto);
+    if (cantidad <= 0) {
+        std::cerr << "Entrada no valida. Por favor, introduzca un monto valido." << std::endl;
+        return false;
+    }
+
+    // Determinar la cuenta de origen y la cuenta de destino
+    CuentaBancaria* cuentaOrigen = (cuentaOrigenTipo == 1) ? clienteSeleccionado->cuentaDolares : clienteSeleccionado->cuentaColones;
+    CuentaBancaria* cuentaDestino = (cuentaDestinoTipo == 1) ? clienteDestino->cuentaDolares : clienteDestino->cuentaColones;
+
+    if (!cuentaOrigen || !cuentaDestino) {
+        std::cout << "Una de las cuentas no existe.\n";
+        return false;
+    }
+
+    if (cuentaOrigen->obtenerSaldo() < cantidad) {
+        std::cout << "Fondos insuficientes en la cuenta de origen.\n";
+        return false;
+    }
+    // Determinar si es necesaria una conversion de moneda
+    bool conversionNecesaria = cuentaOrigenTipo != cuentaDestinoTipo;
+    double tipoDeCambio = 1.0; // Si la conversion no es necesaria se hace una relacion de 1.
+    if (conversionNecesaria) {
+        std::cout << "Ingrese el tipo de cambio actual: ";
+        std::cin >> tipoDeCambio;
+    }
+
+    // Guardar los saldos antes de la transferencia
+    double saldoOrigenAntes = cuentaOrigen->obtenerSaldo();
+    double saldoDestinoAntes = cuentaDestino->obtenerSaldo();
+
+    transferirAotraPersonaConConversion(*cuentaOrigen, *cuentaDestino, cantidad, tipoDeCambio, conversionNecesaria);
+
+    // Guardar los saldos despues de la transferencia
+    double saldoOrigenDespues = cuentaOrigen->obtenerSaldo();
+    double saldoDestinoDespues = cuentaDestino->obtenerSaldo();
+
+    // Verificar si la transferencia fue exitosa basandose en el cambio de los saldos
+    bool transferenciaExitosa = (saldoOrigenAntes > saldoOrigenDespues) && (saldoDestinoDespues > saldoDestinoAntes);
+    return transferenciaExitosa;
+}
 /**
  * @brief Agrega un CDP a la lista de CDPs del cliente.
  * @param nuevoCDP Referencia al nuevo CDP a agregar.
@@ -18,6 +295,7 @@
 void Cliente::agregarCDP(const CDP &nuevoCDP) {
     cdps.push_back(nuevoCDP);
 }
+
 
 
 
@@ -110,36 +388,49 @@ void CDP::crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes) {
             // Crea un nuevo CDP y lo agrega al cliente
             CDP nuevoCDP(clienteSeleccionado->obtenerNombre(), monto, tasaInteres, plazoDias, moneda);
             clienteSeleccionado->agregarCDP(nuevoCDP);
-
-
-            
-
         // Informa que el CDP se creó y agregó con éxito
         // Abrir el archivo en modo de escritura
-        std::ofstream archivo("registro.txt",std::ios_base::app);
+      std::ofstream archivo("registro.txt", std::ios_base::app);
         if (archivo.is_open()) {
-            
-            for (auto& cliente : clientes) {
                 std::string nombreMoneda = (monedaOpcion == 1) ? "colones" : "dólares";
-                std::ostringstream ss;
                 std::time_t tiempo_actual = std::time(nullptr);
                 std::tm* tiempo_info = std::localtime(&tiempo_actual);
+                auto& nuevoCliente = clientes.back();
                 archivo << "-----------------------------------------------------------------------------" << "\n";
                 archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
-                // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
-                archivo << "El cliente de ID: " << cliente -> obtenerID() << ",abrió un CDP con un monto de " <<std::fixed << std::setprecision(2) <<monto <<" "<<nombreMoneda<<"\n"
-                <<"a un plazo de "<< plazoDias <<" días y con " << tasaInteres<<"% de interés."
-                "\n";
+                archivo << "El cliente de ID: " << nuevoCliente->obtenerID() << ", abrió un CDP con un monto de "
+                        << std::fixed << std::setprecision(2) << monto << " " << nombreMoneda << "\n"
+                        << "a un plazo de " << plazoDias << " días y con " << tasaInteres << "% de interés." << "\n";
                 archivo << "-----------------------------------------------------------------------------" << "\n";
-            }
+
             archivo.close();  // Cerrar el archivo después de escribir
-            std::cout << "Informacion de clientes guardada en 'clientes.txt'.\n";
+            std::cout << "Informacion de clientes guardada en 'registro.txt'.\n";
         } else {
             std::cout << "Error al abrir el archivo para escribir.\n";
         }
-    std::cout << "CDP creado y agregado al cliente con exito.\n";
+        std::cout << "CDP creado y agregado al cliente con exito.\n";
+        }
 
-}
+        /*std::ofstream archivo("registro.txt", std::ios_base::app);
+                if (archivo.is_open()) {
+                    using namespace std::chrono;
+                    // Obtener el tiempo actual para la marca de tiempo del nuevo cliente
+                    auto ahora = system_clock::to_time_t(system_clock::now());
+                    std::tm* tiempo_info = std::localtime(&ahora);
+
+                    archivo << "-----------------------------------------------------------------" << "\n";
+                    archivo << "                Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
+                    // Agregar solo la información del nuevo cliente sin iterar sobre todos los clientes
+                    auto& nuevoCliente = clientes.back();
+                    archivo << "Cliente registrado con ID: " << nuevoCliente->obtenerID() << ", y nombre: " << nuevoCliente->obtenerNombre() << ".\n";
+                    archivo << "-----------------------------------------------------------------" << "\n";
+                    archivo.close();  // Cerrar el archivo después de escribir el nuevo registro
+                    std::cout << "Informacion del nuevo cliente guardada en 'registro.txt'.\n";
+                } else {
+                    std::cout << "Error al abrir el archivo para escribir.\n";
+                }
+                break;
+        */
 
 /**
  * @brief Agrega un Prestamo a la lista de Prestamos del cliente.
@@ -506,7 +797,7 @@ std::vector<Cliente*> clientes;
                   << "2. Crear CDP para Cliente\n"
                   << "3. Agregar cuenta para Cliente\n"
                   << "4. Mostrar Detalles del Cliente en un archivo aparte\n"
-                  << "5. Realizar transferencias entre cuentas\n"
+                  << "5. Realizar Transacciones\n"
                   << "6. Agregar Prestamo\n"
                   << "7. Salir\n"
                   << "Ingrese una opcion para realizar operaciones en su cuenta, o bien, presione 7 para volver al menu principal: ";
@@ -531,6 +822,24 @@ std::vector<Cliente*> clientes;
                     }
                 } else {
                     std::cout << "ID invalido. Por favor, introduzca un numero de ID valido.\n";
+                }
+                std::ofstream archivo("registro.txt", std::ios_base::app);
+                if (archivo.is_open()) {
+                    using namespace std::chrono;
+                    // Obtener el tiempo actual para la marca de tiempo del nuevo cliente
+                    auto ahora = system_clock::to_time_t(system_clock::now());
+                    std::tm* tiempo_info = std::localtime(&ahora);
+
+                    archivo << "-----------------------------------------------------------------" << "\n";
+                    archivo << "                Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
+                    // Agregar solo la información del nuevo cliente sin iterar sobre todos los clientes
+                    auto& nuevoCliente = clientes.back();
+                    archivo << "Cliente registrado con ID: " << nuevoCliente->obtenerID() << ", y nombre: " << nuevoCliente->obtenerNombre() << ".\n";
+                    archivo << "-----------------------------------------------------------------" << "\n";
+                    archivo.close();  // Cerrar el archivo después de escribir el nuevo registro
+                    std::cout << "Informacion del nuevo cliente guardada en 'registro.txt'.\n";
+                } else {
+                    std::cout << "Error al abrir el archivo para escribir.\n";
                 }
                 break;
             }
@@ -561,7 +870,7 @@ std::vector<Cliente*> clientes;
                         archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
                         // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
                         archivo << "ID: " << cliente -> obtenerID() << ", Nombre: " << cliente->obtenerNombre() <<", CDPs activos: "<< cliente->obtenerContadorCDPs() <<
-                        ", Cuentas activas:" << cliente ->obtenerContadorCuentas() <<"\n";
+                        ", Cuentas activas:" << cliente ->obtenerContadorCuentas() <<", Prestamos Activos:"<<cliente ->obtenerContadorPrestamos()<<"\n";
 
                         archivo << "-----------------------------------------------------------------" << "\n";
                     }
@@ -573,27 +882,175 @@ std::vector<Cliente*> clientes;
                 break;
             }
             case 5: {
-              
+                int transaccionOpcion;
+                std::cout << "Seleccione la operacion a realizar:\n"
+                        << "1. Transferir entre cuentas de diferentes clientes\n"
+                        << "2. Transferir dinero entre cuentas del mismo cliente\n"
+                        << "3. Depositar dinero en una cuenta\n"
+                        << "4. Retirar dinero de una cuenta\n"
+                        << "5. Salir\n"
+                        << "Ingrese su opcion: ";
+                std::cin >> transaccionOpcion;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                // Si el usuario elige salir, regresa al menú principal
+                if (transaccionOpcion == 5) {
+                    std::cout << "\nVolviendo al menu principal.\n";
+                    break;
+                }
+
+                std::string inputID;
+                std::cout << "Ingrese el ID del cliente que realizara la transaccion: ";
+                std::getline(std::cin, inputID);
+
+                int clienteID;
+                if (Cliente::esNumeroValido(inputID, clienteID)) {
+                    Cliente* clienteSeleccionado = nullptr;
+                    for (auto& cliente : clientes) {
+                        if (cliente->obtenerID() == clienteID) {
+                            clienteSeleccionado = cliente;
+                            break;
+                        }
+                    }
+                    if (!clienteSeleccionado) {
+                        std::cout << "Cliente no encontrado.\n";
+                        break;
+                    }
+
+                    switch (transaccionOpcion) {
+                        case 1: {
+                            if (CuentaBancaria::realizarTransferenciaEntreCuentas(clientes, clienteSeleccionado)) {
+                                std::cout << "Transferencia realizada con exito.\n";
+                            } else {
+                                std::cout << "La transferencia fallo.\n";
+                            }
+                            break;
+                        }
+                        case 2: {
+                            // Opcion para transferencias entre cuentas del mismo cliente
+                            std::string entradaEleccion;
+                            std::cout << "Seleccione la operacion a realizar:\n"
+                                    << "1. De la cuenta de dolares a la de colones\n"
+                                    << "2. De la cuenta de colones a la de dolares\n"
+                                    << "3. Salir\n"
+                                    << "Ingrese su opcion: ";
+                            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                            std::getline(std::cin, entradaEleccion); // Captura la elección como string
+
+                            int eleccionTransferencia = 0;
+                            // Intenta convertir la entrada a un numero y verifica si es valida
+                            if (!Cliente::esNumeroValido(entradaEleccion, eleccionTransferencia) || eleccionTransferencia < 1 || eleccionTransferencia > 3) {
+                                std::cout << "Opcion no valida. Por favor, ingrese un numero valido.\n";
+                                break;
+                            }
+
+                            if (eleccionTransferencia == 3) {
+                                std::cout << "\nVolviendo al menu principal.\n";
+                                break;
+                            }
+                            // Se solicita el monto a transferir
+                            std::string entradaMonto, entradaTipoDeCambio;
+                            std::cout << "Ingrese el monto a transferir: ";
+                            std::getline(std::cin, entradaMonto);
+                            // Se verifica que el monto sea valido
+                            double monto = verificarMonto(entradaMonto);
+                            if (monto <= 0) {
+                                std::cerr << "Entrada no valida. Por favor, introduzca un monto positivo." << std::endl;
+                                break;
+                            }
+                            // Se solicita el tipo de cambio
+                            std::cout << "Ingrese el tipo de cambio actual: ";
+                            std::getline(std::cin, entradaTipoDeCambio);
+                            // Se verifica que el tipo de cambio sea valido
+                            double tipoDeCambio = verificarMonto(entradaTipoDeCambio);
+                            if (tipoDeCambio <= 0) {
+                                std::cerr << "Entrada no valida. Por favor, introduzca un valor positivo para el tipo de cambio." << std::endl;
+                                break;
+                            }
+
+
+                            switch (eleccionTransferencia) {
+                                case 1: // De dólares a colones
+                                    if (clienteSeleccionado->cuentaDolares && clienteSeleccionado->cuentaColones) {
+                                        clienteSeleccionado->cuentaDolares->transferirDolaresAColones(monto, tipoDeCambio, *clienteSeleccionado->cuentaColones);
+                                    } else {
+                                        std::cerr << "El cliente no tiene configuradas las cuentas necesarias para realizar esta operacion." << std::endl;
+                                    }
+                                    break;
+                                case 2: // De colones a dólares
+                                    if (clienteSeleccionado->cuentaColones && clienteSeleccionado->cuentaDolares) {
+                                        clienteSeleccionado->cuentaColones->transferirColonesADolares(monto, tipoDeCambio, *clienteSeleccionado->cuentaDolares);
+                                    } else {
+                                        std::cerr << "El cliente no tiene configuradas las cuentas necesarias para realizar esta operacion." << std::endl;
+                                    }
+                                    break;
+                                default:
+                                    std::cout << "Opcion no valida." << std::endl;
+                                    break;
+                            }
+                            break;
+                        }
+                        case 3: {
+                            // Depositar dinero en una cuenta
+                            std::string entradaMonto;
+                            std::cout << "Ingrese el monto a depositar: ";
+                            // La entrada se toma como string
+                            std::cin >> entradaMonto;
+
+                            // Seleccionar la cuenta (Colones o Dolares)
+                            int tipoCuenta;
+                            std::cout << "Seleccione el tipo de cuenta para el deposito (1: Colones, 2: Dolares): ";
+                            std::cin >> tipoCuenta;
+                            if (tipoCuenta == 1 && clienteSeleccionado->cuentaColones) {
+                                clienteSeleccionado->cuentaColones->depositar(entradaMonto);
+                            } else if (tipoCuenta == 2 && clienteSeleccionado->cuentaDolares) {
+                                clienteSeleccionado->cuentaDolares->depositar(entradaMonto);
+                            } else {
+                                std::cerr << "Cuenta no disponible o monto no valido." << std::endl;
+                            }
+                            break;
+                        }
+                        case 4: {
+                            // Retirar dinero de una cuenta
+                            std::string entradaMonto;
+                            std::cout << "Ingrese el monto a retirar: ";
+                            // La entrada se toma como string para su uso
+                            std::cin >> entradaMonto;
+
+                            // Se selecciona la cuenta (Colones o Dolares)
+                            int tipoCuenta;
+                            std::cout << "Seleccione el tipo de cuenta para el retiro (1: Colones, 2: Dolares): ";
+                            std::cin >> tipoCuenta;
+                            if (tipoCuenta == 1 && clienteSeleccionado->cuentaColones) {
+                                clienteSeleccionado->cuentaColones->retirar(entradaMonto);
+                            } else if (tipoCuenta == 2 && clienteSeleccionado->cuentaDolares) {
+                                clienteSeleccionado->cuentaDolares->retirar(entradaMonto);
+                            } else {
+                                std::cerr << "Cuenta no disponible o monto no valido." << std::endl;
+                            }
+                            break;
+                        }
+                        default:
+                            std::cout << "Opcion no valida." << std::endl;
+                            break;
+                    }
+                } else {
+                    std::cout << "ID de cliente no valido.\n";
+                }
+                break;
             }
+            
             case 6: {
                 Prestamo::crearYAgregarPrestamos(clientes);
+                clientes[clientes.size() - 1]->incrementarContadorPrestamos();
+                break;
+                clientes[0]->incrementarContadorPrestamos();
                 break;
             }
             case 7: {
                 std::cout << "Volviendo al menu principal...\n";
                 break;
             }
-   
-
-            Cliente::archivoClientes.close();  // Cierra el archivo después de escribir
-                
-            default:
-                std::cout << "Opcion no valida.\n";
-                break;
         }
-    }
-    for (auto cliente : clientes) {
-        delete cliente;
-    }
-    clientes.clear();
+        }
+            Cliente::archivoClientes.close();  // Cierra el archivo después de escribir
 }
