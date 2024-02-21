@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <cstdlib>
+#include <vector>
 
 /**
  * @brief Se define esta estructura BASE, en la cual se monta el MAIN, para ejecutar 
