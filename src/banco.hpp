@@ -99,6 +99,8 @@ public:
         this->saldo = nuevoSaldo;
     }
 
+    static void realizarTransferencias(std::vector<Cliente*>& clientes);
+
 private:
     std::string titular; ///< Nombre del titular de la cuenta.
     std::string numeroCuenta; ///< Número único de la cuenta.
