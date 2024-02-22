@@ -766,6 +766,30 @@ std::string Cliente::obtenerNombre() const {
 }
 
 
+
+void imprimirCuentaenregistro(const Cliente* cliente, const std::string& numeroCuenta, int opcionMoneda, double saldoInicial) {
+    std::ofstream archivo("registro.txt", std::ios_base::app);
+
+    if (archivo.is_open()) {
+        std::string nombreMoneda = (opcionMoneda == 1) ? "colones" : "dólares";
+        std::ostringstream ss;
+        std::time_t tiempo_actual = std::time(nullptr);
+        std::tm* tiempo_info = std::localtime(&tiempo_actual);
+
+        archivo << "-----------------------------------------------------------------------------" << "\n";
+        archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
+        // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
+        archivo << "El cliente de ID: " << cliente->obtenerID() << ", abrió una cuenta, de numero: " << numeroCuenta
+                << " con un monto de " << std::fixed << std::setprecision(2) << saldoInicial << " " << nombreMoneda << "\n";
+        archivo << "-----------------------------------------------------------------------------" << "\n";
+
+        archivo.close();  // Cerrar el archivo después de escribir
+        std::cout << "Informacion de clientes guardada en 'clientes.txt'.\n";
+    } else {
+        std::cout << "Error al abrir el archivo para escribir.\n";
+    }
+}
+
 /**
  * @brief Agrega una cuenta bancaria al cliente.
  * 
@@ -840,32 +864,37 @@ void Cliente::agregarCuentaABanco(std::vector<Cliente*>& clientes) {
         std::cerr << "Moneda no reconocida. La cuenta no fue agregada." << std::endl;
         delete nuevaCuenta; // Liberar memoria en caso de moneda no reconocida
     }
-    // Abrir el archivo en modo de escritura
-        std::ofstream archivo("registro.txt",std::ios_base::app);
-        if (archivo.is_open()) {
-            
-            for (auto& cliente : clientes) {
-                std::string nombreMoneda = (opcionMoneda == 1) ? "colones" : "dólares";
-                std::ostringstream ss;
-                std::time_t tiempo_actual = std::time(nullptr);
-                std::tm* tiempo_info = std::localtime(&tiempo_actual);
-                archivo << "-----------------------------------------------------------------------------" << "\n";
-                archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
-                // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
-                archivo << "El cliente de ID: " << cliente -> obtenerID() << ",abrió una cuenta, de numero: "<< numeroCuenta 
-                <<" con un monto de " <<std::fixed << std::setprecision(2) <<saldoInicial <<" "<<nombreMoneda<<"\n";
-                archivo << "-----------------------------------------------------------------------------" << "\n";
-            }
-            archivo.close();  // Cerrar el archivo después de escribir
-            std::cout << "Informacion de clientes guardada en 'clientes.txt'.\n";
-        } else {
-            std::cout << "Error al abrir el archivo para escribir.\n";
-        }
-
-
-
-
+    clienteSeleccionado->incrementarContadorCuentas();
+    imprimirCuentaenregistro(clienteSeleccionado, numeroCuenta, opcionMoneda, saldoInicial);
 }
+
+void borrarUltimasLineasRegistro() {
+    const int lineasABorrar = 4;
+    // Leer todo el contenido del archivo
+    std::ifstream archivoEntrada("registro.txt");
+    std::vector<std::string> lineas;
+    std::string linea;
+    while (std::getline(archivoEntrada, linea)) {
+        lineas.push_back(linea);
+    }
+    archivoEntrada.close();
+    // Verificar si hay suficientes líneas para borrar
+    if (lineas.size() >= lineasABorrar) {
+        // Eliminar las últimas 4 líneas
+        lineas.erase(lineas.end() - lineasABorrar, lineas.end());
+    } else {
+        std::cerr << "No hay suficientes líneas para borrar.\n";
+        return;
+    }
+    // Escribir el contenido actualizado en el archivo
+    std::ofstream archivoSalida("registro.txt");
+    for (const auto& l : lineas) {
+        archivoSalida << l << "\n";
+    }
+    archivoSalida.close();
+}
+
+
 
 
 /**
@@ -883,6 +912,8 @@ void Cliente::agregarCuentaColones(CuentaBancaria* cuenta) {
         std::cout << "Cuenta en colones agregada con exito." << std::endl;
     } else {
         std::cerr << "El cliente ya tiene una cuenta en colones." << std::endl;
+        borrarUltimasLineasRegistro();
+        decrementarContadorCuentas();
     }
 }
 
@@ -901,6 +932,8 @@ void Cliente::agregarCuentaDolares(CuentaBancaria* cuenta) {
         std::cout << "Cuenta en dolares agregada con exito." << std::endl;
     } else {
         std::cerr << "El cliente ya tiene una cuenta en dolares." << std::endl;
+        borrarUltimasLineasRegistro();
+        decrementarContadorCuentas();
     }
 }
 
@@ -991,7 +1024,6 @@ std::vector<Cliente*> clientes;
             }
             case 3: {
                 Cliente::agregarCuentaABanco(clientes);
-                clientes[clientes.size() - 1]->incrementarContadorCuentas();
                 break;
             }
             case 4: {

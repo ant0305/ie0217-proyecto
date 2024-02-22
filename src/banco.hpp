@@ -204,6 +204,9 @@ public:
     void incrementarContadorCuentas() {
         contadorCuentas++;
     }
+    void decrementarContadorCuentas(){
+        contadorCuentas--;
+    }
 
     int contadorPrestamos=0;
     int obtenerContadorPrestamos() const {
