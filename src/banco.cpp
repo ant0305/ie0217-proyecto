@@ -34,6 +34,7 @@ double verificarMonto(const std::string& entrada) {
     return -1; // Indica un error si la entrada no es valida
 }
 
+
 /**
  * @brief Verifica si una cadena de texto representa una opcion valida.
  * 
@@ -61,6 +62,7 @@ bool esOpcionValida(const std::string& entrada, int& numero) {
     return false;
 }
 
+
 /**
  * @brief Deposita una cantidad en la cuenta bancaria.
  * 
@@ -77,6 +79,7 @@ void CuentaBancaria::depositar(const std::string& entrada) {
         std::cerr << "Entrada no valida. Por favor, introduzca un monto valido." << std::endl;
     }
 }
+
 
 /**
  * @brief Retira una cantidad de la cuenta bancaria.
@@ -129,6 +132,7 @@ void CuentaBancaria::transferirDolaresAColones(double cantidad, double tipoDeCam
     }
 }
 
+
 /**
  * @brief Transfiere una cantidad de colones a dólares.
  * 
@@ -150,6 +154,7 @@ void CuentaBancaria::transferirColonesADolares(double cantidad, double tipoDeCam
         std::cerr << "Fondos insuficientes en la cuenta de colones." << std::endl;
     }
 }
+
 
 /**
  * @brief Transfiere una cantidad entre cuentas con posible conversion de moneda.
@@ -287,6 +292,8 @@ bool CuentaBancaria::realizarTransferenciaEntreCuentas(std::vector<Cliente*>& cl
     bool transferenciaExitosa = (saldoOrigenAntes > saldoOrigenDespues) && (saldoDestinoDespues > saldoDestinoAntes);
     return transferenciaExitosa;
 }
+
+
 /**
  * @brief Agrega un CDP a la lista de CDPs del cliente.
  * @param nuevoCDP Referencia al nuevo CDP a agregar.
@@ -421,6 +428,12 @@ void Cliente::agregarPrestamo(const Prestamo &nuevoPrestamo) {
     prestamos.push_back(nuevoPrestamo);
 }
 
+
+/**
+ * @brief Funcion crea y agrega prestamos para un cliente
+ * 
+ * @param clientes Vector de punteros a clientes
+ */
 void Prestamo::crearYAgregarPrestamos(std::vector<Cliente*>& clientes) {
     // Verifica si hay clientes registrados
     if (clientes.empty()) {
@@ -592,6 +605,8 @@ Cliente::Cliente(int id, std::string nombre) : id(id), nombre(nombre), cuentaCol
         throw std::runtime_error("ID invalido o ya utilizado.");
     }
 }
+
+
 /**
  * @brief Destructor de la clase Cliente.
  * Elimina el ID del conjunto de IDs asignados cuando se destruye un cliente.
@@ -599,6 +614,7 @@ Cliente::Cliente(int id, std::string nombre) : id(id), nombre(nombre), cuentaCol
 Cliente::~Cliente() {
     idsAsignados.erase(id);
 }
+
 
 /**
  * @brief Asigna un ID al cliente.
@@ -609,6 +625,7 @@ bool Cliente::asignarID(int id) {
     auto resultado = idsAsignados.insert(id);
     return resultado.second;
 }
+
 
 /**
  * @brief Verifica si una cadena es un número válido y lo convierte.
@@ -632,6 +649,7 @@ bool Cliente::esNumeroValido(const std::string& str, int& numero) {
     }
 }
 
+
 /**
  * @brief Obtiene el identificador único del cliente.
  * @return El identificador único del cliente.
@@ -640,9 +658,16 @@ int Cliente::obtenerID() const {
     return id;
 }
 
+
+/**
+ * @brief obtiene el monto del CDP
+ * 
+ * @return monto del CDP
+ */
 double CDP::obtenerMonto() const {
     return monto;
 }
+
 
 /**
  * @brief Obtiene el nombre del cliente.
@@ -791,13 +816,21 @@ void Cliente::agregarCuentaDolares(CuentaBancaria* cuenta) {
     }
 }
 
+
+/**
+ * @brief Funcion que analiza si contiene digitos el string
+ * 
+ * @param str
+ * @return true Devuelve true si se encuentra al menos un digito
+ * @return false devuelve false si no se encontraron digitos
+ */
 bool contieneDigitos(const std::string& str) {
     for (char c : str) {
         if (std::isdigit(c)) {
-            return true;  // Devuelve true si encuentra al menos un dígito
+            return true;
         }
     }
-    return false;  // Devuelve false si no se encontraron dígitos
+    return false;
 }
 
 
