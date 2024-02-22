@@ -8,7 +8,8 @@
 #include <iomanip>
 #include <sstream>
 #include <chrono>
-#include    <algorithm>
+#include <algorithm>
+#include <string>
 
 /**
  * @brief Verifica y convierte una cadena de texto en un valor numerico.
@@ -397,8 +398,8 @@ void CDP::crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes) {
     clienteSeleccionado->agregarCDP(nuevoCDP);
     // Incrementa el contador de prestamos del cliente
     clienteSeleccionado->incrementarContadorCDPs();
-        // Informa que el CDP se creó y agregó con éxito
-        // Abrir el archivo en modo de escritura
+    // Informa que el CDP se creó y agregó con éxito
+    // Abrir el archivo en modo de escritura
     std::ofstream archivo("registro.txt", std::ios_base::app);
     if (archivo.is_open()) {
         std::string nombreMoneda = (monedaOpcion == 1) ? "colones" : "dólares";
@@ -426,6 +427,20 @@ void CDP::crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes) {
  */
 void Cliente::agregarPrestamo(const Prestamo &nuevoPrestamo) {
     prestamos.push_back(nuevoPrestamo);
+}
+
+
+std::string obtenerTipoPrestamo(int tipoPrestamo) {
+    switch (tipoPrestamo) {
+        case 1:
+            return "Prestamo Personal";
+        case 2:
+            return "Prestamo Prendario";
+        case 3:
+            return "Prestamo Hipotecario";
+        default:
+            return "No se conoce el tipo de prestamo";
+    }
 }
 
 
@@ -474,7 +489,6 @@ void Prestamo::crearYAgregarPrestamos(std::vector<Cliente*>& clientes) {
               <<"\nSeleccione el tipo de Prestamo que desea adquirir: ";
     int tipoPrestamo;
     std::cin >> tipoPrestamo;
-
     // Ingresa la moneda y el monto del Prestamo
     std::cout << "Seleccione la moneda (1 para Colones, 2 para Dolares): ";
     int monedaOpcion;
@@ -577,6 +591,29 @@ void Prestamo::crearYAgregarPrestamos(std::vector<Cliente*>& clientes) {
     
     // Incrementa el contador de prestamos del cliente
     clienteSeleccionado-> incrementarContadorPrestamos();
+
+    // Informa que el CDP se creó y agregó con éxito
+    // Abrir el archivo en modo de escritura
+    std::ofstream archivo("registro.txt", std::ios_base::app);
+    if (archivo.is_open()) {
+        std::string nombreMoneda = (monedaOpcion == 1) ? "colones" : "dólares";
+        std::time_t tiempo_actual = std::time(nullptr);
+        std::tm* tiempo_info = std::localtime(&tiempo_actual);
+        // llama a la funcion para conocer el tipo de prestamo
+        std::string tipoPrestamoNombre = obtenerTipoPrestamo(tipoPrestamo);
+
+        archivo << "-----------------------------------------------------------------------------" << "\n";
+        archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
+        archivo << "El cliente de ID: " << clienteSeleccionado->obtenerID() << ", abrió un Prestamo del tipo "
+                << std::fixed << std::setprecision(2)<< tipoPrestamoNombre << " con un\n"
+                << std::fixed << std:: setprecision(2)<< "monto de "<< monto << " " << nombreMoneda << " a un plazo de " << plazoMeses 
+                << " meses y con " << tasaInteres << "% de interés." << "\n";
+        archivo << "-----------------------------------------------------------------------------" << "\n";
+
+        archivo.close();  // Cerrar el archivo después de escribir
+    } else {
+        std::cout << "Error al abrir el archivo registro.txt para escribir.\n";
+    }
 
     // Informa que el Prestamo se creó y agregó con éxito
     std::cout << "Prestamo creado y agregado al cliente con exito.\n";
@@ -883,12 +920,12 @@ std::vector<Cliente*> clientes;
                     auto ahora = system_clock::to_time_t(system_clock::now());
                     std::tm* tiempo_info = std::localtime(&ahora);
 
-                    archivo << "-----------------------------------------------------------------" << "\n";
+                    archivo << "-----------------------------------------------------------------------------" << "\n";
                     archivo << "                Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
                     // Agregar solo la información del nuevo cliente sin iterar sobre todos los clientes
                     auto& nuevoCliente = clientes.back();
                     archivo << "Cliente registrado con ID: " << nuevoCliente->obtenerID() << ", y nombre: " << nuevoCliente->obtenerNombre() << ".\n";
-                    archivo << "-----------------------------------------------------------------" << "\n";
+                    archivo << "-----------------------------------------------------------------------------" << "\n";
                     archivo.close();  // Cerrar el archivo después de escribir el nuevo registro
                     std::cout << "Informacion del nuevo cliente guardada en 'registro.txt'.\n";
                 } else {
