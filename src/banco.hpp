@@ -9,7 +9,6 @@
 #include <limits>
 #include <fstream>
 
-class Cliente;
 
 /**
  * @brief Clase que representa una cuenta bancaria.
