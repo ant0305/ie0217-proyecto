@@ -385,52 +385,33 @@ void CDP::crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes) {
             tasaInteres = (monedaOpcion == 1) ? 5.84 : 3.28;
             break;
     }
-            // Crea un nuevo CDP y lo agrega al cliente
-            CDP nuevoCDP(clienteSeleccionado->obtenerNombre(), monto, tasaInteres, plazoDias, moneda);
-            clienteSeleccionado->agregarCDP(nuevoCDP);
+    // Crea un nuevo CDP y lo agrega al cliente
+    CDP nuevoCDP(clienteSeleccionado->obtenerNombre(), monto, tasaInteres, plazoDias, moneda);
+    clienteSeleccionado->agregarCDP(nuevoCDP);
+    // Incrementa el contador de prestamos del cliente
+    clienteSeleccionado->incrementarContadorCDPs();
         // Informa que el CDP se creó y agregó con éxito
         // Abrir el archivo en modo de escritura
-      std::ofstream archivo("registro.txt", std::ios_base::app);
-        if (archivo.is_open()) {
-                std::string nombreMoneda = (monedaOpcion == 1) ? "colones" : "dólares";
-                std::time_t tiempo_actual = std::time(nullptr);
-                std::tm* tiempo_info = std::localtime(&tiempo_actual);
-                auto& nuevoCliente = clientes.back();
-                archivo << "-----------------------------------------------------------------------------" << "\n";
-                archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
-                archivo << "El cliente de ID: " << nuevoCliente->obtenerID() << ", abrió un CDP con un monto de "
-                        << std::fixed << std::setprecision(2) << monto << " " << nombreMoneda << "\n"
-                        << "a un plazo de " << plazoDias << " días y con " << tasaInteres << "% de interés." << "\n";
-                archivo << "-----------------------------------------------------------------------------" << "\n";
+    std::ofstream archivo("registro.txt", std::ios_base::app);
+    if (archivo.is_open()) {
+        std::string nombreMoneda = (monedaOpcion == 1) ? "colones" : "dólares";
+        std::time_t tiempo_actual = std::time(nullptr);
+        std::tm* tiempo_info = std::localtime(&tiempo_actual);
 
-            archivo.close();  // Cerrar el archivo después de escribir
-            std::cout << "Informacion de clientes guardada en 'registro.txt'.\n";
-        } else {
-            std::cout << "Error al abrir el archivo para escribir.\n";
-        }
-        std::cout << "CDP creado y agregado al cliente con exito.\n";
-        }
+        archivo << "-----------------------------------------------------------------------------" << "\n";
+        archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
+        archivo << "El cliente de ID: " << clienteSeleccionado->obtenerID() << ", abrió un CDP con un monto de "
+                << std::fixed << std::setprecision(2) << monto << " " << nombreMoneda << "\n"
+                << "a un plazo de " << plazoDias << " días y con " << tasaInteres << "% de interés." << "\n";
+        archivo << "-----------------------------------------------------------------------------" << "\n";
 
-        /*std::ofstream archivo("registro.txt", std::ios_base::app);
-                if (archivo.is_open()) {
-                    using namespace std::chrono;
-                    // Obtener el tiempo actual para la marca de tiempo del nuevo cliente
-                    auto ahora = system_clock::to_time_t(system_clock::now());
-                    std::tm* tiempo_info = std::localtime(&ahora);
-
-                    archivo << "-----------------------------------------------------------------" << "\n";
-                    archivo << "                Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
-                    // Agregar solo la información del nuevo cliente sin iterar sobre todos los clientes
-                    auto& nuevoCliente = clientes.back();
-                    archivo << "Cliente registrado con ID: " << nuevoCliente->obtenerID() << ", y nombre: " << nuevoCliente->obtenerNombre() << ".\n";
-                    archivo << "-----------------------------------------------------------------" << "\n";
-                    archivo.close();  // Cerrar el archivo después de escribir el nuevo registro
-                    std::cout << "Informacion del nuevo cliente guardada en 'registro.txt'.\n";
-                } else {
-                    std::cout << "Error al abrir el archivo para escribir.\n";
-                }
-                break;
-        */
+        archivo.close();  // Cerrar el archivo después de escribir
+        std::cout << "Informacion de clientes guardada en 'registro.txt'.\n";
+    } else {
+        std::cout << "Error al abrir el archivo para escribir.\n";
+    }
+    std::cout << "CDP creado y agregado al cliente con exito.\n";
+}
 
 /**
  * @brief Agrega un Prestamo a la lista de Prestamos del cliente.
@@ -885,14 +866,11 @@ std::vector<Cliente*> clientes;
 
             case 2: {
                 CDP::crearYAgregarCDPParaCliente(clientes);
-                clientes[clientes.size() - 1]->incrementarContadorCDPs();
-                clientes[0]->incrementarContadorCDPs();
-                
+                break;
             }
             case 3: {
                 Cliente::agregarCuentaABanco(clientes);
                 clientes[clientes.size() - 1]->incrementarContadorCuentas();
-                clientes[0]->incrementarContadorCDPs();
                 break;
             }
             case 4: {
