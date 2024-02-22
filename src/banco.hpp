@@ -104,6 +104,8 @@ private:
     std::string numeroCuenta; ///< Número único de la cuenta.
     double saldo; ///< Saldo actual de la cuenta.
     std::string moneda; ///< Tipo de moneda de la cuenta.
+    int contadorPrestamos; ///< Contador de prestamos activos
+    int contadorCDPs; ///< Contador de CDPs activos
 };
 
 
