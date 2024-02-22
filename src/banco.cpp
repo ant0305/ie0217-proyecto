@@ -503,16 +503,52 @@ void Prestamo::crearYAgregarPrestamos(std::vector<Cliente*>& clientes) {
     // Muestra las opciones de Prestamo según la moneda
     int plazoMeses;
     double tasaInteres;
-    if (monedaOpcion == 1) {
-        std::cout << "\nOpciones de prestamo en Colones:\n"
-                  << "1. 96 meses con 12.72% de interes\n"
-                  << "2. 120 meses con 25.44% de interes\n"
-                  << "3. 180 meses con 38.16% de interes\n";
-    } else {
-        std::cout << "\nOpciones de prestamo en Dolares:\n"
-                  << "1. 96 meses con 10.09% de interes\n"
-                  << "2. 120 meses con 20.18% de interes\n"
-                  << "3. 180 meses con 30.27% de interes\n";
+    switch (tipoPrestamo){
+        case 1:
+            std::cout << "\nOpciones de prestamo en " <<moneda << ":\n";
+            if (monedaOpcion == 1) {
+                    std::cout << "\nOpciones de prestamo en Colones:\n"
+                            << "1. 96 meses con 12.72% de interes\n"
+                            << "2. 120 meses con 25.44% de interes\n"
+                            << "3. 180 meses con 38.16% de interes\n";
+            } else {
+                std::cout << "\nOpciones de prestamo en Dolares:\n"
+                        << "1. 96 meses con 10.09% de interes\n"
+                        << "2. 120 meses con 20.18% de interes\n"
+                        << "3. 180 meses con 30.27% de interes\n";
+                }
+            break;
+        case 2:
+            std::cout << "\nOpciones de prestamo en " <<moneda << ":\n";
+            if (monedaOpcion == 1) {
+                    std::cout << "\nOpciones de prestamo en Colones:\n"
+                            << "1. 96 meses con 12.72% de interes\n"
+                            << "2. 120 meses con 25.44% de interes\n"
+                            << "3. 180 meses con 38.16% de interes\n";
+            } else {
+                std::cout << "\nOpciones de prestamo en Dolares:\n"
+                          << "1. 96 meses con 10.09% de interes\n"
+                          << "2. 120 meses con 20.18% de interes\n"
+                          << "3. 180 meses con 30.27% de interes\n";
+                }
+            break;
+        case 3:
+            std::cout << "\nOpciones de prestamo en " <<moneda << ":\n";
+            if (monedaOpcion == 1) {
+                    std::cout << "\nOpciones de prestamo en Colones:\n"
+                            << "1. 96 meses con 12.72% de interes\n"
+                            << "2. 120 meses con 25.44% de interes\n"
+                            << "3. 180 meses con 38.16% de interes\n";
+            } else {
+                std::cout << "\nOpciones de prestamo en Dolares:\n"
+                        << "1. 96 meses con 10.09% de interes\n"
+                        << "2. 120 meses con 20.18% de interes\n"
+                        << "3. 180 meses con 30.27% de interes\n";
+                }
+            break;
+        default:
+            std::cerr << "\nTipo de prestamo no valido, selecione una opcion valida";
+            return;
     }
 
     // Solicita la opción del Prestamo
@@ -544,6 +580,9 @@ void Prestamo::crearYAgregarPrestamos(std::vector<Cliente*>& clientes) {
     // Crea un nuevo Prestamo y lo agrega al cliente
     Prestamo nuevoPrestamo(clienteSeleccionado->obtenerNombre(), monto, tasaInteres, plazoMeses, moneda);
     clienteSeleccionado->agregarPrestamo(nuevoPrestamo);
+    
+    // Incrementa el contador de prestamos del cliente
+    clienteSeleccionado-> incrementarContadorPrestamos();
 
     // Informa que el Prestamo se creó y agregó con éxito
     std::cout << "Prestamo creado y agregado al cliente con exito.\n";
@@ -847,16 +886,14 @@ std::vector<Cliente*> clientes;
             case 2: {
                 CDP::crearYAgregarCDPParaCliente(clientes);
                 clientes[clientes.size() - 1]->incrementarContadorCDPs();
-                break;
                 clientes[0]->incrementarContadorCDPs();
                 
             }
             case 3: {
                 Cliente::agregarCuentaABanco(clientes);
                 clientes[clientes.size() - 1]->incrementarContadorCuentas();
-                break;
                 clientes[0]->incrementarContadorCDPs();
-                    break;
+                break;
             }
             case 4: {
                 // Abrir el archivo en modo de escritura
@@ -1041,9 +1078,6 @@ std::vector<Cliente*> clientes;
             
             case 6: {
                 Prestamo::crearYAgregarPrestamos(clientes);
-                clientes[clientes.size() - 1]->incrementarContadorPrestamos();
-                break;
-                clientes[0]->incrementarContadorPrestamos();
                 break;
             }
             case 7: {
