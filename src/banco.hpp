@@ -9,13 +9,14 @@
 #include <limits>
 #include <fstream>
 
+
 /**
- * @brief Declaracion anticipada de la clase Cliente
+ * @brief Se declara de manera anticipada la clase Cliente
  */
 class Cliente;
-/**
- * @brief Clase que representa una cuenta bancaria.
- */
+
+
+
 /**
  * @brief Clase que representa una cuenta bancaria.
  */
