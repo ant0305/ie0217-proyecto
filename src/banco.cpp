@@ -7,6 +7,8 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include <chrono>
+#include    <algorithm>
 
 /**
  * @brief Verifica y convierte una cadena de texto en un valor numerico.
@@ -296,6 +298,7 @@ void Cliente::agregarCDP(const CDP &nuevoCDP) {
 
 
 
+
 /**
  * @brief Crea y agrega un CDP para un cliente.
  * @param clientes Vector de punteros a clientes.
@@ -376,8 +379,6 @@ void CDP::crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes) {
             plazoDias = 1460;
             tasaInteres = (monedaOpcion == 1) ? 6.63 : 4.81;
             break;
-        case 4:
-            return;
         default:
             std::cerr << "Opcion no valida, seleccionando opcion predeterminada.\n";
             plazoDias = 365;
@@ -389,30 +390,47 @@ void CDP::crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes) {
             clienteSeleccionado->agregarCDP(nuevoCDP);
         // Informa que el CDP se creó y agregó con éxito
         // Abrir el archivo en modo de escritura
-        std::ofstream archivo("registro.txt",std::ios_base::app);
+      std::ofstream archivo("registro.txt", std::ios_base::app);
         if (archivo.is_open()) {
-            
-            for (auto& cliente : clientes) {
                 std::string nombreMoneda = (monedaOpcion == 1) ? "colones" : "dólares";
-                std::ostringstream ss;
                 std::time_t tiempo_actual = std::time(nullptr);
                 std::tm* tiempo_info = std::localtime(&tiempo_actual);
+                auto& nuevoCliente = clientes.back();
                 archivo << "-----------------------------------------------------------------------------" << "\n";
                 archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
-                // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
-                archivo << "El cliente de ID: " << cliente -> obtenerID() << ",abrió un CDP con un monto de " <<std::fixed << std::setprecision(2) <<monto <<" "<<nombreMoneda<<"\n"
-                <<"a un plazo de "<< plazoDias <<" días y con " << tasaInteres<<"% de interés."
-                "\n";
+                archivo << "El cliente de ID: " << nuevoCliente->obtenerID() << ", abrió un CDP con un monto de "
+                        << std::fixed << std::setprecision(2) << monto << " " << nombreMoneda << "\n"
+                        << "a un plazo de " << plazoDias << " días y con " << tasaInteres << "% de interés." << "\n";
                 archivo << "-----------------------------------------------------------------------------" << "\n";
-            }
+
             archivo.close();  // Cerrar el archivo después de escribir
-            std::cout << "Informacion de clientes guardada en 'clientes.txt'.\n";
+            std::cout << "Informacion de clientes guardada en 'registro.txt'.\n";
         } else {
             std::cout << "Error al abrir el archivo para escribir.\n";
         }
-    std::cout << "CDP creado y agregado al cliente con exito.\n";
+        std::cout << "CDP creado y agregado al cliente con exito.\n";
+        }
 
-}
+        /*std::ofstream archivo("registro.txt", std::ios_base::app);
+                if (archivo.is_open()) {
+                    using namespace std::chrono;
+                    // Obtener el tiempo actual para la marca de tiempo del nuevo cliente
+                    auto ahora = system_clock::to_time_t(system_clock::now());
+                    std::tm* tiempo_info = std::localtime(&ahora);
+
+                    archivo << "-----------------------------------------------------------------" << "\n";
+                    archivo << "                Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
+                    // Agregar solo la información del nuevo cliente sin iterar sobre todos los clientes
+                    auto& nuevoCliente = clientes.back();
+                    archivo << "Cliente registrado con ID: " << nuevoCliente->obtenerID() << ", y nombre: " << nuevoCliente->obtenerNombre() << ".\n";
+                    archivo << "-----------------------------------------------------------------" << "\n";
+                    archivo.close();  // Cerrar el archivo después de escribir el nuevo registro
+                    std::cout << "Informacion del nuevo cliente guardada en 'registro.txt'.\n";
+                } else {
+                    std::cout << "Error al abrir el archivo para escribir.\n";
+                }
+                break;
+        */
 
 /**
  * @brief Agrega un Prestamo a la lista de Prestamos del cliente.
@@ -530,6 +548,13 @@ void Prestamo::crearYAgregarPrestamos(std::vector<Cliente*>& clientes) {
     // Informa que el Prestamo se creó y agregó con éxito
     std::cout << "Prestamo creado y agregado al cliente con exito.\n";
 }
+
+
+
+
+
+
+
 /**
  * @brief Se almacenan los IDs asignados a clientes.
  */
@@ -629,14 +654,9 @@ void Cliente::agregarCuentaABanco(std::vector<Cliente*>& clientes) {
     // Solicitar al usuario el ID del cliente al que se le desea agregar una cuenta
     std::cout << "Ingrese el ID del cliente a quien desea agregar una cuenta: ";
     int clienteID;
-    std::string entradaID;
-    std::getline(std::cin, entradaID);
-    // Se verifica que el id sea valido
-    if (!esNumeroValido(entradaID, clienteID)) {
-        std::cout << "ID no valido. Por favor, ingrese un numero.\n";
-        return;
-    }
-
+    std::cin >> clienteID;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    // Buscar al cliente seleccionado por su ID
     Cliente* clienteSeleccionado = nullptr;
     for (auto& cliente : clientes) {
         if (cliente->obtenerID() == clienteID) {
@@ -652,30 +672,31 @@ void Cliente::agregarCuentaABanco(std::vector<Cliente*>& clientes) {
     
     // Solicitar al usuario información para la nueva cuenta
     std::string numeroCuenta, moneda;
+    double saldoInicial;
     std::cout << "Ingrese el numero de cuenta: ";
     std::getline(std::cin, numeroCuenta);
 
-    int opcionMoneda = 0;
-    std::string entradaMoneda;
-    while (true) {
-        std::cout << "Seleccione la moneda:\n"
-                  << "1. CRC (Colones)\n"
-                  << "2. USD (Dolares)\n"
-                  << "Opcion: ";
-        std::getline(std::cin, entradaMoneda);
-        if (esOpcionValida(entradaMoneda, opcionMoneda)) break;
-        else std::cout << "Opcion no valida. Intente de nuevo.\n";
-    }
-    std::string entradaSaldo;
-    std::cout << "Ingrese el saldo inicial de la cuenta: ";
-    std::getline(std::cin, entradaSaldo);
-    // Se usa verificarMonto para validar y convertir el saldo inicial
-    double saldoInicial = verificarMonto(entradaSaldo);
-    if (saldoInicial < 0) {
-        std::cerr << "Saldo inicial no valido. Introduzca un numero positivo.\n";
+    int opcionMoneda;
+    std::cout << "Seleccione la moneda:\n";
+    std::cout << "1. CRC (Colones)\n";
+    std::cout << "2. USD (Dolares)\n";
+    std::cout << "Opcion: ";
+    std::cin >> opcionMoneda;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    // Asignar la moneda según la opción ingresada por el usuario
+    if (opcionMoneda == 1) {
+        moneda = "CRC";
+    } else if (opcionMoneda == 2) {
+        moneda = "USD";
+    } else {
+        std::cerr << "Opcion no valida. La cuenta no fue agregada." << std::endl;
         return;
     }
-    // Agregar la cuenta al cliente correspondiente según la moneda
+    // Solicitar al usuario el saldo inicial de la cuenta
+    std::cout << "Ingrese el saldo inicial de la cuenta: ";
+    std::cin >> saldoInicial;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    // Crear una nueva instancia de CuentaBancaria
     CuentaBancaria* nuevaCuenta = new CuentaBancaria(clienteSeleccionado->obtenerNombre(), numeroCuenta, moneda, saldoInicial);
      // Agregar la cuenta al cliente correspondiente según la moneda
     if (moneda == "CRC") {
@@ -707,6 +728,9 @@ void Cliente::agregarCuentaABanco(std::vector<Cliente*>& clientes) {
         } else {
             std::cout << "Error al abrir el archivo para escribir.\n";
         }
+
+
+
 
 }
 
@@ -783,13 +807,9 @@ std::vector<Cliente*> clientes;
         switch (opcion) {
             case 1: {
                 std::cout << "Ingrese el ID del cliente: ";
-                std::string entradaID;
-                std::cin >> entradaID;
                 std::getline(std::cin, entradaID);
                 int id;
-                // Verifica si la entrada es un numero valido y no esta ya asignado
-                if (Cliente::esNumeroValido(entradaID, id) && Cliente::idsAsignados.find(id) == Cliente::idsAsignados.end()) {
-                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpia el buffer de entrada
+                if (Cliente::esNumeroValido(entradaID, id)) {
                     std::cout << "Ingrese el nombre del cliente: ";
                     std::getline(std::cin, nombre);
 
@@ -801,7 +821,25 @@ std::vector<Cliente*> clientes;
                         std::cout << "\nCliente creado con exito.\n";
                     }
                 } else {
-                    std::cerr << "ID invalido o ya utilizado. Por favor, intente con otro ID." << std::endl;
+                    std::cout << "ID invalido. Por favor, introduzca un numero de ID valido.\n";
+                }
+                std::ofstream archivo("registro.txt", std::ios_base::app);
+                if (archivo.is_open()) {
+                    using namespace std::chrono;
+                    // Obtener el tiempo actual para la marca de tiempo del nuevo cliente
+                    auto ahora = system_clock::to_time_t(system_clock::now());
+                    std::tm* tiempo_info = std::localtime(&ahora);
+
+                    archivo << "-----------------------------------------------------------------" << "\n";
+                    archivo << "                Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
+                    // Agregar solo la información del nuevo cliente sin iterar sobre todos los clientes
+                    auto& nuevoCliente = clientes.back();
+                    archivo << "Cliente registrado con ID: " << nuevoCliente->obtenerID() << ", y nombre: " << nuevoCliente->obtenerNombre() << ".\n";
+                    archivo << "-----------------------------------------------------------------" << "\n";
+                    archivo.close();  // Cerrar el archivo después de escribir el nuevo registro
+                    std::cout << "Informacion del nuevo cliente guardada en 'registro.txt'.\n";
+                } else {
+                    std::cout << "Error al abrir el archivo para escribir.\n";
                 }
                 break;
             }
@@ -832,7 +870,7 @@ std::vector<Cliente*> clientes;
                         archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
                         // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
                         archivo << "ID: " << cliente -> obtenerID() << ", Nombre: " << cliente->obtenerNombre() <<", CDPs activos: "<< cliente->obtenerContadorCDPs() <<
-                        ", Cuentas activas:" << cliente ->obtenerContadorCuentas() <<"\n";
+                        ", Cuentas activas:" << cliente ->obtenerContadorCuentas() <<", Prestamos Activos:"<<cliente ->obtenerContadorPrestamos()<<"\n";
 
                         archivo << "-----------------------------------------------------------------" << "\n";
                     }
@@ -1003,6 +1041,9 @@ std::vector<Cliente*> clientes;
             
             case 6: {
                 Prestamo::crearYAgregarPrestamos(clientes);
+                clientes[clientes.size() - 1]->incrementarContadorPrestamos();
+                break;
+                clientes[0]->incrementarContadorPrestamos();
                 break;
             }
             case 7: {

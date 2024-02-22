@@ -14,6 +14,9 @@ class Cliente;
 /**
  * @brief Clase que representa una cuenta bancaria.
  */
+/**
+ * @brief Clase que representa una cuenta bancaria.
+ */
 class CuentaBancaria {
 public:
 /**
@@ -102,6 +105,7 @@ private:
     double saldo; ///< Saldo actual de la cuenta.
     std::string moneda; ///< Tipo de moneda de la cuenta.
 };
+
 
 /**
  * @brief Clase que representa un Certificado de Depósito a Plazo (CDP).
@@ -197,6 +201,14 @@ public:
         }
     void incrementarContadorCuentas() {
         contadorCuentas++;
+    }
+
+    int contadorPrestamos=0;
+    int obtenerContadorPrestamos() const {
+            return contadorPrestamos;
+        }
+    void incrementarContadorPrestamos() {
+        contadorPrestamos++;
     }
     
     static std::set<int> idsAsignados; ///< Conjunto de IDs asignados a clientes.
