@@ -10,6 +10,7 @@
 #include <chrono>
 #include <algorithm>
 #include <string>
+#include <cmath>
 
 /**
  * @brief Verifica y convierte una cadena de texto en un valor numerico.
@@ -444,6 +445,25 @@ std::string obtenerTipoPrestamo(int tipoPrestamo) {
 }
 
 
+bool encabezado = false; ///< Varaible global que verifica si ya existe encabezado
+
+/**
+ * @brief funcion para escribir la primera fila del archivo prestamo
+ * 
+ * @param archivo_prestamos 
+ */
+void escribirfila(std::ofstream& archivo_prestamos) {
+    // Escribir la tabla en el archivo
+    archivo_prestamos << std::setw(15) << std::left << "ID"
+                        << std::setw(20) << std::left << "Cliente"
+                        << std::setw(25) << std::left << "Tipo de Prestamo"
+                        << std::setw(15) << std::left << "Moneda"
+                        << std::setw(20) << std::left << "Plazo en meses"
+                        << std::setw(20) << std::left << "Monto inicial"
+                        << std::setw(20) << std::left << "Cuota mensual"
+                        << std::setw(20) << std::left << "Tasa de intereses" << "\n";
+}
+
 /**
  * @brief Funcion crea y agrega prestamos para un cliente
  * 
@@ -592,7 +612,6 @@ void Prestamo::crearYAgregarPrestamos(std::vector<Cliente*>& clientes) {
     // Incrementa el contador de prestamos del cliente
     clienteSeleccionado-> incrementarContadorPrestamos();
 
-    // Informa que el CDP se creó y agregó con éxito
     // Abrir el archivo en modo de escritura
     std::ofstream archivo("registro.txt", std::ios_base::app);
     if (archivo.is_open()) {
@@ -613,6 +632,34 @@ void Prestamo::crearYAgregarPrestamos(std::vector<Cliente*>& clientes) {
         archivo.close();  // Cerrar el archivo después de escribir
     } else {
         std::cout << "Error al abrir el archivo registro.txt para escribir.\n";
+    }
+
+
+    // Abrir el archivo 
+    std::ofstream archivo_prestamos("prestamo.txt", std::ios_base::app);
+    if (archivo_prestamos.is_open()) {
+        if (!encabezado) {
+            escribirfila(archivo_prestamos);
+            encabezado = true;
+        }
+
+        std::string nombreMoneda = (monedaOpcion == 1) ? "colones" : "dólares";
+        double tasaInteresMensual = tasaInteres / 100 / 12;
+        double cuotaMensual = monto * tasaInteresMensual / (1 - std::pow(1 + tasaInteresMensual, -plazoMeses));
+
+        archivo_prestamos << std::fixed << std::setprecision(2);
+        archivo_prestamos << std::setw(15) << std::left << clienteSeleccionado->obtenerID()
+                            << std::setw(20) << std::left << clienteSeleccionado->obtenerNombre()
+                            << std::setw(25) << std::left << obtenerTipoPrestamo(tipoPrestamo)
+                            << std::setw(16) << std::left << nombreMoneda
+                            << std::setw(20) << std::left << plazoMeses
+                            << std::setw(20) << std::left << monto
+                            << std::setw(20) << std::left << cuotaMensual
+                            << std::setw(20) << std::left << tasaInteres << "\n";
+
+        archivo_prestamos.close();  // Cerrar el archivo después de escribir
+    } else {
+        std::cout << "Error al abrir el archivo prestamo.txt para escribir.\n";
     }
 
     // Informa que el Prestamo se creó y agregó con éxito
