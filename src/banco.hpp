@@ -9,13 +9,14 @@
 #include <limits>
 #include <fstream>
 
+
 /**
- * @brief Declaracion anticipada de la clase Cliente
+ * @brief Se declara de manera anticipada la clase Cliente
  */
 class Cliente;
-/**
- * @brief Clase que representa una cuenta bancaria.
- */
+
+
+
 /**
  * @brief Clase que representa una cuenta bancaria.
  */
@@ -100,6 +101,8 @@ public:
     void actualizarSaldo(double nuevoSaldo) {
         this->saldo = nuevoSaldo;
     }
+
+    static void realizarTransferencias(std::vector<Cliente*>& clientes);
 
 private:
     std::string titular; ///< Nombre del titular de la cuenta.
