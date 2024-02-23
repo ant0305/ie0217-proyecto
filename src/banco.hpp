@@ -151,6 +151,8 @@ private:
     double tasaInteres; ///< Tasa de interés del préstamo.
     int plazoMeses;  ///< Plazo en meses del préstamo.
     std::string moneda; ///< Moneda del préstamo.
+    double saldoRestante; ///< Saldo restante del préstamo.
+    std::vector<double> pagos; ///< Registro de pagos realizados.
 
 public:
     /**
@@ -162,25 +164,69 @@ public:
      * @param moneda Moneda del préstamo.
      */
     Prestamo(std::string titular, double monto, double tasaInteres, int plazoMeses, std::string moneda)
-    : titular(titular), monto(monto), tasaInteres(tasaInteres), plazoMeses(plazoMeses), moneda(moneda) {}
+    : titular(titular), monto(monto), tasaInteres(tasaInteres), plazoMeses(plazoMeses), moneda(moneda), saldoRestante(monto) {}
     
     /**
-     * @brief Método estático que calcula la información del préstamo.
+     * @brief Paga una cuota del préstamo.
+     */
+    void pagarCuota();
+    
+    /**
+     * @brief Calcula la cuota mensual del préstamo.
+     * @return La cuota mensual.
+     */
+    double calcularCuotaMensual() const;
+
+    /**
+     * @brief Método estático para calcular la información del préstamo.
      */
     static void calcularPrestamo();
+
     /**
-     * @brief Metodo estatico que crea y agrega los prestamos
-     * 
+     * @brief Método estático que crea y agrega los préstamos a los clientes.
+     * @param clientes Vector de punteros a clientes.
      */
     static void crearYAgregarPrestamos(std::vector<Cliente*>& clientes);
     /**
-     * @brief Metodo para obtener la moneda del prestamo
-     
-     * @return el tipo de moneda 
+     * @brief Método estático que genera un reporte de los préstamos de un cliente.
+     * @param prestamos Lista de préstamos del cliente.
      */
-    std::string obtenerMoneda() const {
-        return moneda;
+    static void generarReporteDePrestamos(const std::vector<Prestamo>& prestamos);
+
+    /**
+     * @brief Obtiene la moneda del préstamo.
+     * @return La moneda del préstamo.
+     */
+    std::string obtenerMoneda() const { return moneda; }
+
+    /**
+     * @brief Obtiene el saldo restante del préstamo.
+     * @return El saldo restante.
+     */
+    double obtenerSaldoRestante() const { return saldoRestante; }
+
+    /**
+     * @brief Obtiene los pagos realizados hacia el préstamo.
+     * @return Un vector con los montos de los pagos realizados.
+     */
+    const std::vector<double>& obtenerPagos() const { return pagos; }
+
+
+    double obtenerMonto() const {
+        return monto;
     }
+
+    double obtenerTasaInteres() const {
+        return tasaInteres;
+    }
+
+    int obtenerPlazoMeses() const {
+        return plazoMeses;
+    }
+
+    // double obtenerSaldoRestante() const {
+    //     return saldoRestante;
+    // }
 };
 
 
@@ -248,6 +294,10 @@ public:
      * @return ID del cliente.
      */
     int obtenerID() const;
+
+    void pagarCuotaDePrestamo();
+
+    void actualizarRegistroDePrestamos();
 
     /**
      * @brief Obtiene el nombre del cliente.

@@ -667,8 +667,92 @@ void Prestamo::crearYAgregarPrestamos(std::vector<Cliente*>& clientes) {
 }
 
 
+void Prestamo::pagarCuota() {
+    double cuotaMensual = calcularCuotaMensual();
+    if (saldoRestante >= cuotaMensual) {
+        saldoRestante -= cuotaMensual;
+        pagos.push_back(cuotaMensual);
+        std::cout << "Cuota de " << cuotaMensual << " " << moneda << " pagada exitosamente. Saldo restante: " << saldoRestante << std::endl;
+    } else {
+        std::cout << "El saldo restante es menor que la cuota mensual. Realizando pago final de " << saldoRestante << std::endl;
+        pagos.push_back(saldoRestante);
+        saldoRestante = 0;
+    }
+}
+
+double Prestamo::calcularCuotaMensual() const {
+    double tasaInteresMensual = tasaInteres / 12 / 100;
+    double cuota = (monto * tasaInteresMensual) / (1 - pow(1 + tasaInteresMensual, -plazoMeses));
+    return cuota;
+}
+
+void Prestamo::generarReporteDePrestamos(const std::vector<Prestamo>& prestamos) {
+    std::ofstream reporte("reporte_prestamos.txt");
+    if (reporte.is_open()) {
+        for (const auto& prestamo : prestamos) {
+            reporte << "Titular: " << prestamo.titular << "\n";
+            reporte << "Monto inicial: " << prestamo.monto << " " << prestamo.moneda << "\n";
+            reporte << "Tasa de interes: " << prestamo.tasaInteres << "%\n";
+            reporte << "Plazo: " << prestamo.plazoMeses << " meses\n";
+            reporte << "Saldo restante: " << prestamo.saldoRestante << "\n";
+            reporte << "Pagos realizados:\n";
+            for (const auto& pago : prestamo.pagos) {
+                reporte << "- " << pago << " " << prestamo.moneda << "\n";
+            }
+            reporte << "-----------------------------\n";
+        }
+        reporte.close();
+        std::cout << "Reporte de prestamos generado exitosamente y guardado en 'reporte_prestamos.txt'.\n";
+    } else {
+        std::cout << "No se pudo abrir el archivo para escribir el reporte.\n";
+    }
+}
+
+void Cliente::actualizarRegistroDePrestamos() {
+   
+    std::ofstream archivo("registro_prestamos.txt", std::ios::out | std::ios::trunc);
+    if (archivo.is_open()) {
+        for (const auto& prestamo : prestamos) {
+            archivo << "Titular: " << nombre
+                    << ", Monto: " << prestamo.obtenerMonto()
+                    << ", Tasa de Interes: " << prestamo.obtenerTasaInteres()
+                    << ", Plazo: " << prestamo.obtenerPlazoMeses() << " meses"
+                    << ", Saldo Restante: " << prestamo.obtenerSaldoRestante() << "\n";
+        }
+        archivo.close();
+    } else {
+        std::cout << "No se pudo abrir el archivo para actualizar el registro de prestamos.\n";
+    }
+}
 
 
+void Cliente::pagarCuotaDePrestamo() {
+    if (prestamos.empty()) {
+        std::cout << "No tienes prestamos activos.\n";
+        return;
+    }
+
+    std::cout << "Tienes los siguientes prestamos activos:\n";
+    for (size_t i = 0; i < prestamos.size(); ++i) {
+        std::cout << i + 1 << ". Monto: " << prestamos[i].obtenerMonto()
+                  << ", Tasa de Interes: " << prestamos[i].obtenerTasaInteres()
+                  << "%, Plazo: " << prestamos[i].obtenerPlazoMeses()
+                  << " meses, Saldo Restante: " << prestamos[i].obtenerSaldoRestante() << "\n";
+    }
+
+    std::cout << "Selecciona el prestamo para pagar la cuota (1-" << prestamos.size() << "): ";
+    size_t seleccion;
+    std::cin >> seleccion;
+    if (seleccion > 0 && seleccion <= prestamos.size()) {
+        prestamos[seleccion - 1].pagarCuota();
+
+        actualizarRegistroDePrestamos();
+
+        std::cout << "Cuota pagada exitosamente para el prestamo seleccionado.\n";
+    } else {
+        std::cout << "Seleccion no valida.\n";
+    }
+}
 
 
 
@@ -935,9 +1019,9 @@ std::vector<Cliente*> clientes;
                   << "3. Agregar cuenta para Cliente\n"
                   << "4. Mostrar Detalles del Cliente en un archivo aparte\n"
                   << "5. Realizar Transacciones\n"
-                  << "6. Agregar Prestamo\n"
+                  << "6. Realizar transacciones con prestamos\n"
                   << "7. Salir\n"
-                  << "Ingrese una opcion para realizar operaciones en su cuenta, o bien, presione 7 para volver al menu principal: ";
+                  << "Ingrese una opcion: ";
         std::cin >> opcion;
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
@@ -947,36 +1031,41 @@ std::vector<Cliente*> clientes;
                 std::getline(std::cin, entradaID);
                 int id;
                 if (Cliente::esNumeroValido(entradaID, id)) {
-                    std::cout << "Ingrese el nombre del cliente: ";
-                    std::getline(std::cin, nombre);
+                    // Verificar si el ID ya existe
+                    auto it = std::find_if(clientes.begin(), clientes.end(), [&id](const Cliente* cliente) {
+                        return cliente->obtenerID() == id;
+                    });
 
-                    if (contieneDigitos(nombre)) {
-                        std::cout << "Error: El nombre no debe contener numeros.\n";
-                    }else{
-                        Cliente* nuevoCliente = new Cliente(id, nombre);
-                        clientes.push_back(nuevoCliente);
-                        std::cout << "\nCliente creado con exito.\n";
+                    if (it != clientes.end()) {
+                        std::cout << "ID invalido o ya utilizado.\n";
+                    } else {
+                        std::cout << "Ingrese el nombre del cliente: ";
+                        std::getline(std::cin, nombre);
+
+                        if (contieneDigitos(nombre)) {
+                            std::cout << "Error: El nombre no debe contener numeros.\n";
+                        } else {
+                            Cliente* nuevoCliente = new Cliente(id, nombre);
+                            clientes.push_back(nuevoCliente);
+                            std::cout << "\nCliente creado con exito.\n";
+
+                            std::ofstream archivo("registro.txt", std::ios_base::app);
+                            if (archivo.is_open()) {
+                                auto ahora = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+                                std::tm* tiempo_info = std::localtime(&ahora);
+                                archivo << "-----------------------------------------------------------------------------\n";
+                                archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
+                                archivo << "Cliente registrado con ID: " << id << ", y nombre: " << nombre << ".\n";
+                                archivo << "-----------------------------------------------------------------------------\n";
+                                archivo.close();
+                                std::cout << "Informacion del nuevo cliente guardada en 'registro.txt'.\n";
+                            } else {
+                                std::cout << "Error al abrir el archivo para escribir.\n";
+                            }
+                        }
                     }
                 } else {
                     std::cout << "ID invalido. Por favor, introduzca un numero de ID valido.\n";
-                }
-                std::ofstream archivo("registro.txt", std::ios_base::app);
-                if (archivo.is_open()) {
-                    using namespace std::chrono;
-                    // Obtener el tiempo actual para la marca de tiempo del nuevo cliente
-                    auto ahora = system_clock::to_time_t(system_clock::now());
-                    std::tm* tiempo_info = std::localtime(&ahora);
-
-                    archivo << "-----------------------------------------------------------------------------" << "\n";
-                    archivo << "                Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
-                    // Agregar solo la información del nuevo cliente sin iterar sobre todos los clientes
-                    auto& nuevoCliente = clientes.back();
-                    archivo << "Cliente registrado con ID: " << nuevoCliente->obtenerID() << ", y nombre: " << nuevoCliente->obtenerNombre() << ".\n";
-                    archivo << "-----------------------------------------------------------------------------" << "\n";
-                    archivo.close();  // Cerrar el archivo después de escribir el nuevo registro
-                    std::cout << "Informacion del nuevo cliente guardada en 'registro.txt'.\n";
-                } else {
-                    std::cout << "Error al abrir el archivo para escribir.\n";
                 }
                 break;
             }
@@ -1170,9 +1259,71 @@ std::vector<Cliente*> clientes;
                 }
                 break;
             }
-            
+
             case 6: {
-                Prestamo::crearYAgregarPrestamos(clientes);
+                int opcionPrestamo;
+                do {
+                    std::cout << "Realizar transacciones con prestamos:\n"
+                            << "1. Agregar Prestamo\n"
+                            << "2. Pagar cuota de Prestamo\n"
+                            << "3. Solicitar reporte de Prestamos\n"
+                            << "4. Volver\n"
+                            << "Seleccione una opcion: ";
+                    std::cin >> opcionPrestamo;
+
+                    switch (opcionPrestamo) {
+                        case 1: {
+                            // Agregar un nuevo prestamo
+                            Prestamo::crearYAgregarPrestamos(clientes);
+                            break;
+                        }
+                        case 2: {
+                            // Pagar cuota de prestamo
+                            std::cout << "Ingrese el ID del cliente para pagar cuota: ";
+                            int clienteID;
+                            std::cin >> clienteID;
+                            bool clienteEncontrado = false;
+                            for (auto& cliente : clientes) {
+                                if (cliente->obtenerID() == clienteID) {
+                                    clienteEncontrado = true;
+                                    cliente->pagarCuotaDePrestamo();
+                                    cliente->actualizarRegistroDePrestamos(); 
+                                    break;
+                                }
+                            }
+                            if (!clienteEncontrado) {
+                                std::cout << "Cliente no encontrado.\n";
+                            }
+                            break;
+                        }
+                        case 3: {
+                            // Solicitar reporte de prestamos
+                            std::cout << "Ingrese el ID del cliente para solicitar el reporte de prestamos: ";
+                            int clienteID;
+                            std::cin >> clienteID;
+                            bool clienteEncontrado = false;
+
+                            for (auto& cliente : clientes) {
+                                if (cliente->obtenerID() == clienteID) {
+                                    clienteEncontrado = true;
+                                    // Generar y mostrar el reporte de prestamos del cliente
+                                    Prestamo::generarReporteDePrestamos(cliente->obtenerPrestamos());
+                                    break;
+                                }
+                            }
+                            if (!clienteEncontrado) {
+                                std::cout << "Cliente no encontrado.\n";
+                            }
+                            break;
+                        }
+
+                        case 4:
+                            std::cout << "Volviendo al menu anterior...\n";
+                            break;
+                        default:
+                            std::cout << "Opcion no valida. Por favor, intente de nuevo.\n";
+                    }
+                } while (opcionPrestamo != 4);
                 break;
             }
             case 7: {
