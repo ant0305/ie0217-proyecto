@@ -9,10 +9,9 @@
 #include <limits>
 #include <fstream>
 
-class Cliente;
 
 /**
- * @brief Clase que representa una cuenta bancaria.
+ * @brief Se declara de manera anticipada la clase Cliente
  */
 
 class CuentaBancaria {
