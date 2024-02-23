@@ -1361,8 +1361,8 @@ void CuentaBancaria::realizarTransferencias(std::vector<Cliente*>& clientes) {
                     << "2. De la cuenta de colones a la de dolares\n"
                     << "3. Salir\n"
                     << "Ingrese su opcion: ";
-                std::cin >> entradaEleccion; // Cambiado a std::cin para capturar la opción como string directamente.
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');// Captura la elección como string
+                std::cin >> entradaEleccion;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
             int eleccionTransferencia = stoi(entradaEleccion);
             // Intenta convertir la entrada a un numero y verifica si es valida
