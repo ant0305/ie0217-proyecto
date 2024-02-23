@@ -12,6 +12,14 @@
 #include <string>
 #include <cmath>
 
+
+/**
+ * @brief Verifica si un ID ya existe en un archivo .csv
+ * Busca el ID, si existe entonces muestra el mensaje error
+ * @param nombreArchivo Nombre del archivo .csv
+ * @param nuevoID El ID que se verifica
+ * @return true Si ya existe
+ */
 bool verificarIDExistente(const std::string& nombreArchivo, int nuevoID) {
     std::ifstream archivo(nombreArchivo);
 
