@@ -99,23 +99,23 @@ void imprimirDepositoenregistro(double cantidad,double saldo) {
  * @param cantidad Monto de dinero que se retira
  * @param saldo Monto de la cuenta luego del retiro
  */
-void imprimirRetiroenregistro(double cantidad,double saldo) {
+void imprimirRetiroenregistro(double cantidad, double saldo) {
     std::ofstream archivo("registro.txt", std::ios_base::app);
     if (archivo.is_open()) {
         std::ostringstream ss;
-        std::time_t tiempo_actual = std::time(nullptr);
-        std::tm* tiempo_info = std::localtime(&tiempo_actual);
-        archivo << "-----------------------------------------------------------------------------" << "\n";
-        archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
-        // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
-        archivo << "Retiro exitoso por un valor de: "<< cantidad <<" y su saldo actual es:" <<saldo<<"\n";
-        archivo.close();  // Cerrar el archivo después de escribir
-        std::cout << "\nInformacion de clientes guardada en 'registro.txt'.\n";
+        auto tiempo_actual = std::time(nullptr);
+        auto tiempo_info = std::localtime(&tiempo_actual);
+        ss << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S");
+        archivo << "-----------------------------------------------------------------------------\n";
+        archivo << "Fecha y hora: " << ss.str() << "\n";
+        archivo << "Retiro exitoso por un valor de: " << cantidad << " y su saldo actual es: " << saldo << "\n";
+        archivo << "-----------------------------------------------------------------------------\n";
+        archivo.close();
+        std::cout << "\nInformacion del retiro guardada en 'registro.txt'.\n";
     } else {
-        std::cout << "\nError al abrir el archivo para escribir.\n";
+        std::cerr << "\nError al abrir el archivo para escribir.\n";
     }
 }
-
 
 /**
  * @brief Funcion que imprime en el registro las conversiones de dinero
@@ -265,7 +265,7 @@ bool CuentaBancaria::retirar(const std::string& entrada) {
     // Se verifica si hay fondos suficientes en la cuenta para el retiro
     if (cantidad <= saldo) {
         saldo -= cantidad;
-        std::cout << "\nRetiro realizado con éxito. Saldo actual: " << saldo << std::endl;
+        std::cout << "\nRetiro realizado con exito. Saldo actual: " << saldo << std::endl;
         imprimirRetiroenregistro(cantidad,saldo);
         return true;
     } else {
@@ -1361,10 +1361,10 @@ void CuentaBancaria::realizarTransferencias(std::vector<Cliente*>& clientes) {
                     << "2. De la cuenta de colones a la de dolares\n"
                     << "3. Salir\n"
                     << "Ingrese su opcion: ";
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::getline(std::cin, entradaEleccion); // Captura la elección como string
+                std::cin >> entradaEleccion; // Cambiado a std::cin para capturar la opción como string directamente.
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');// Captura la elección como string
 
-            int eleccionTransferencia = 0;
+            int eleccionTransferencia = stoi(entradaEleccion);
             // Intenta convertir la entrada a un numero y verifica si es valida
             if (!Cliente::esNumeroValido(entradaEleccion, eleccionTransferencia) || eleccionTransferencia < 1 || eleccionTransferencia > 3) {
                 std::cout << "\nOpcion no valida. Por favor, ingrese un numero valido.\n";
