@@ -14,9 +14,7 @@ class Cliente;
 /**
  * @brief Clase que representa una cuenta bancaria.
  */
-/**
- * @brief Clase que representa una cuenta bancaria.
- */
+
 class CuentaBancaria {
 public:
 /**
@@ -98,6 +96,8 @@ public:
     void actualizarSaldo(double nuevoSaldo) {
         this->saldo = nuevoSaldo;
     }
+
+    static void realizarTransferencias(std::vector<Cliente*>& clientes);
 
 private:
     std::string titular; ///< Nombre del titular de la cuenta.
@@ -249,6 +249,9 @@ public:
         }
     void incrementarContadorCuentas() {
         contadorCuentas++;
+    }
+    void decrementarContadorCuentas(){
+        contadorCuentas--;
     }
 
     int contadorPrestamos=0;
