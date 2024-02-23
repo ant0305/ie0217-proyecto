@@ -1,5 +1,4 @@
 #include "banco.hpp"
-#include "funciones.hpp"
 #include <iostream>
 #include <vector>
 #include <limits>
@@ -83,6 +82,7 @@ void imprimirDepositoenregistro(double cantidad,double saldo) {
         std::cout << "\nError al abrir el archivo para escribir.\n";
     }
 }
+
 
 
 /**
@@ -230,7 +230,7 @@ void CuentaBancaria::depositar(const std::string& entrada) {
     if (cantidad > 0) {
         saldo += cantidad;
         std::cout << "\nDeposito realizado con exito. Saldo actual: " << saldo << std::endl;
-        imprimirRetiroenregistro(cantidad,saldo);
+        imprimirDepositoenregistro(cantidad,saldo);
     } else {
         // Si la cantidad no es valida, se muestra un mensaje de error
         std::cerr << "\nEntrada no valida. Por favor, introduzca un monto valido.\n" << std::endl;
@@ -258,7 +258,7 @@ bool CuentaBancaria::retirar(const std::string& entrada) {
     if (cantidad <= saldo) {
         saldo -= cantidad;
         std::cout << "\nRetiro realizado con éxito. Saldo actual: " << saldo << std::endl;
-        imprimirDepositoenregistro(cantidad,saldo);
+        imprimirRetiroenregistro(cantidad,saldo);
         return true;
     } else {
         // Si no hay fondos suficientes, se muestra un mensaje de error y se retorna false
@@ -505,14 +505,14 @@ void imprimirCDPenregistro(int monedaOpcion, double monto, int plazoDias, double
  */
 
 void CDP::crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes) {
-    
+   
     if (clientes.empty()) {
-        std::cout << "\nNo hay clientes registrados.\n";
+        std::cout << "\nNo hay clientes registrados el dia de hoy.\n";
         return;
     }
      // Muestra la lista de clientes
     std::cout << "Clientes registrados:\n";
-
+    
     for (const auto& cliente : clientes) {
         std::cout << "ID: " << cliente->obtenerID() << ", Nombre: " << cliente->obtenerNombre() << "\n";
     }
@@ -520,7 +520,7 @@ void CDP::crearYAgregarCDPParaCliente(std::vector<Cliente*>& clientes) {
     std::cout << "\nIngrese el ID del cliente para el CDP: ";
     int clienteID;
     std::cin >> clienteID;
-
+    
      // Busca al cliente seleccionado
     Cliente* clienteSeleccionado = nullptr;
     for (auto& cliente : clientes) {
@@ -694,7 +694,7 @@ void escribirPrestamoenRegistro(int monedaOpcion, double monto, int plazoMeses, 
 void Prestamo::crearYAgregarPrestamos(std::vector<Cliente*>& clientes) {
     // Verifica si hay clientes registrados
     if (clientes.empty()) {
-        std::cout << "No hay clientes registrados.\n";
+        std::cout << "No hay clientes registradosel dia de hoy.\n";
         return;
     }
     // Muestra la lista de clientes
@@ -1129,7 +1129,7 @@ void imprimirCuentaenregistro(const Cliente* cliente, const std::string& numeroC
 void Cliente::agregarCuentaABanco(std::vector<Cliente*>& clientes) {
     // Verificar si hay clientes registrados
     if (clientes.empty()) {
-        std::cout << "\nNo hay clientes registrados.\n";
+        std::cout << "\nNo hay clientes registrados el dia de hoy.\n";
         return;
     }
     // Muestra la lista de clientes
