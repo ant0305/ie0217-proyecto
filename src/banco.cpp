@@ -42,9 +42,7 @@ bool verificarIDExistente(const std::string& nombreArchivo, int nuevoID) {
                     std::cout << "ID ya existente en el archivo. Ingrese otro ID.\n";
                     archivo.close();
                     return true;
-                } else {
-                    break;  // Salir del bucle interno
-                }
+                } 
             } else {
                 std::cerr << "Error: El formato del ID en el archivo no es válido.\n";
                 archivo.close();
