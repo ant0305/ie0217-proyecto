@@ -14,9 +14,7 @@ class Cliente;
 /**
  * @brief Clase que representa una cuenta bancaria.
  */
-/**
- * @brief Clase que representa una cuenta bancaria.
- */
+
 class CuentaBancaria {
 public:
 /**

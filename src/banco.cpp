@@ -12,6 +12,82 @@
 #include <string>
 #include <cmath>
 
+void imprimirDepositoenregistro(double cantidad,double saldo) {
+    std::ofstream archivo("registro.txt", std::ios_base::app);
+    if (archivo.is_open()) {
+        std::ostringstream ss;
+        std::time_t tiempo_actual = std::time(nullptr);
+        std::tm* tiempo_info = std::localtime(&tiempo_actual);
+        archivo << "-----------------------------------------------------------------------------" << "\n";
+        archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
+        // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
+        archivo << "Deposito exitoso por un valor de: "<< cantidad <<" y su saldo actual es:" <<saldo<<"\n";
+        archivo << "-----------------------------------------------------------------------------" << "\n";
+        archivo.close();  // Cerrar el archivo después de escribir
+        std::cout << "Informacion de clientes guardada en 'registro.txt'.\n";
+    } else {
+        std::cout << "Error al abrir el archivo para escribir.\n";
+    }
+}
+
+void imprimirRetiroenregistro(double cantidad,double saldo) {
+    std::ofstream archivo("registro.txt", std::ios_base::app);
+    if (archivo.is_open()) {
+        std::ostringstream ss;
+        std::time_t tiempo_actual = std::time(nullptr);
+        std::tm* tiempo_info = std::localtime(&tiempo_actual);
+        archivo << "-----------------------------------------------------------------------------" << "\n";
+        archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
+        // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
+        archivo << "Retiro exitoso por un valor de: "<< cantidad <<" y su saldo actual es:" <<saldo<<"\n";
+        archivo << "-----------------------------------------------------------------------------" << "\n";
+        archivo.close();  // Cerrar el archivo después de escribir
+        std::cout << "Informacion de clientes guardada en 'registro.txt'.\n";
+    } else {
+        std::cout << "Error al abrir el archivo para escribir.\n";
+    }
+}
+
+void imprimirConversionCaDenregistro(double cantidad, double tipoDeCambio, CuentaBancaria& cuentaDolares) {
+    std::ofstream archivo("registro.txt", std::ios_base::app);
+    if (archivo.is_open()) {
+        std::ostringstream ss;
+        std::time_t tiempo_actual = std::time(nullptr);
+        std::tm* tiempo_info = std::localtime(&tiempo_actual);
+        archivo << "-----------------------------------------------------------------------------" << "\n";
+        archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
+        double montoEnDolares = cantidad /tipoDeCambio;
+        // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
+        archivo << "Conversion exitosa de CRC"<<cantidad<<" a $ "<< montoEnDolares <<"\n";
+        archivo << "-----------------------------------------------------------------------------" << "\n";
+        archivo.close();  // Cerrar el archivo después de escribir
+        std::cout << "Informacion de clientes guardada en 'registro.txt'.\n";
+    } else {
+        std::cout << "Error al abrir el archivo para escribir.\n";
+    }
+}
+
+
+void imprimirConversionDaCenregistro(double cantidad, double tipoDeCambio, CuentaBancaria& cuentaColones) {
+    std::ofstream archivo("registro.txt", std::ios_base::app);
+    if (archivo.is_open()) {
+        std::ostringstream ss;
+        std::time_t tiempo_actual = std::time(nullptr);
+        std::tm* tiempo_info = std::localtime(&tiempo_actual);
+        archivo << "-----------------------------------------------------------------------------" << "\n";
+        archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
+        double montoEnColones = cantidad * tipoDeCambio;
+        // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
+        archivo << "Conversion exitosa de $"<<cantidad<<" a CRC "<< montoEnColones <<"\n";
+        archivo << "-----------------------------------------------------------------------------" << "\n";
+        archivo.close();  // Cerrar el archivo después de escribir
+        std::cout << "Informacion de clientes guardada en 'registro.txt'.\n";
+    } else {
+        std::cout << "Error al abrir el archivo para escribir.\n";
+    }
+}
+
+
 /**
  * @brief Verifica y convierte una cadena de texto en un valor numerico.
  * 
@@ -71,11 +147,13 @@ bool esOpcionValida(const std::string& entrada, int& numero) {
  * @param cantidad Cantidad a depositar.
  */
 void CuentaBancaria::depositar(const std::string& entrada) {
+    
     // Se verifica que el monto sea valido 
     double cantidad = verificarMonto(entrada);
     if (cantidad > 0) {
         saldo += cantidad;
         std::cout << "Deposito realizado con exito. Saldo actual: " << saldo << std::endl;
+        imprimirRetiroenregistro(cantidad,saldo);
     } else {
         // Si la cantidad no es valida, se muestra un mensaje de error
         std::cerr << "Entrada no valida. Por favor, introduzca un monto valido." << std::endl;
@@ -103,12 +181,14 @@ bool CuentaBancaria::retirar(const std::string& entrada) {
     if (cantidad <= saldo) {
         saldo -= cantidad;
         std::cout << "Retiro realizado con éxito. Saldo actual: " << saldo << std::endl;
+        imprimirDepositoenregistro(cantidad,saldo);
         return true;
     } else {
         // Si no hay fondos suficientes, se muestra un mensaje de error y se retorna false
         std::cerr << "Fondos insuficientes para el retiro." << std::endl;
         return false;
     }
+ 
 }
 
 
@@ -129,6 +209,7 @@ void CuentaBancaria::transferirDolaresAColones(double cantidad, double tipoDeCam
         std::cout << "Transferencia completada: $" << cantidad << " convertidos a CRC" << montoEnColones << std::endl;
         std::cout << "Nuevo saldo en dolares: $" << this->obtenerSaldo() << std::endl;
         std::cout << "Nuevo saldo en colones: CRC" << cuentaColones.obtenerSaldo() << std::endl;
+        imprimirConversionDaCenregistro(cantidad,tipoDeCambio,cuentaColones);
     } else {
         // Mensaje si no hay fondos suficientes
         std::cerr << "Fondos insuficientes en la cuenta de dolares." << std::endl;
@@ -152,6 +233,7 @@ void CuentaBancaria::transferirColonesADolares(double cantidad, double tipoDeCam
         std::cout << "Transferencia completada: CRC" << cantidad << " convertidos a $" << montoEnDolares << std::endl;
         std::cout << "Nuevo saldo en colones: CRC" << this->obtenerSaldo() << std::endl;
         std::cout << "Nuevo saldo en dolares: $" << cuentaDolares.obtenerSaldo() << std::endl;
+        imprimirConversionCaDenregistro(cantidad,tipoDeCambio,cuentaDolares);
     } else {
         // Mensaje si no hay fondos suficientes
         std::cerr << "Fondos insuficientes en la cuenta de colones." << std::endl;
@@ -259,7 +341,7 @@ bool CuentaBancaria::realizarTransferenciaEntreCuentas(std::vector<Cliente*>& cl
         std::cerr << "Entrada no valida. Por favor, introduzca un monto valido." << std::endl;
         return false;
     }
-
+    
     // Determinar la cuenta de origen y la cuenta de destino
     CuentaBancaria* cuentaOrigen = (cuentaOrigenTipo == 1) ? clienteSeleccionado->cuentaDolares : clienteSeleccionado->cuentaColones;
     CuentaBancaria* cuentaDestino = (cuentaDestinoTipo == 1) ? clienteDestino->cuentaDolares : clienteDestino->cuentaColones;
@@ -295,6 +377,8 @@ bool CuentaBancaria::realizarTransferenciaEntreCuentas(std::vector<Cliente*>& cl
     bool transferenciaExitosa = (saldoOrigenAntes > saldoOrigenDespues) && (saldoDestinoDespues > saldoDestinoAntes);
     return transferenciaExitosa;
 }
+
+
 
 
 /**
@@ -1088,8 +1172,8 @@ void CuentaBancaria::realizarTransferencias(std::vector<Cliente*>& clientes) {
                 clienteSeleccionado->cuentaDolares->depositar(entradaMonto);
             } else {
                 std::cerr << "Cuenta no disponible o monto no valido." << std::endl;
+                
             }
-            //llamar funcion aqui
             break;
         }
         case 4:{
@@ -1210,11 +1294,11 @@ std::vector<Cliente*> clientes;
                                         << ", Prestamos Activos: " << cliente->obtenerContadorPrestamos() << "\n";
                                 archivo << "------------------------------------------------------------------------------" << "\n";
                             }
-                            archivo.close();  // Cerrar el archivo después de escribir
                             std::cout << "Informacion de clientes guardada en 'clientes.txt'.\n";
                         } else {
                             std::cout << "Error al abrir el archivo para escribir.\n";
                         }
+                        archivo.close();  // Cerrar el archivo después de escribir
                         break;
             }
             case 5: {
