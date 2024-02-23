@@ -12,6 +12,55 @@
 #include <string>
 #include <cmath>
 
+bool verificarIDExistente(const std::string& nombreArchivo, int nuevoID) {
+    std::ifstream archivo(nombreArchivo);
+
+    if (!archivo.is_open()) {
+        std::cerr << "Error al abrir el archivo " << nombreArchivo << std::endl;
+        return true; // Suponemos que hay un error, por precaución
+    }
+
+    std::string linea;
+
+    while (std::getline(archivo, linea)) {
+        std::istringstream ss(linea);
+        std::string fechaHora, idStr, nombre;
+
+        // Leer Fecha y hora, ID y nombre desde el formato CSV
+        if (std::getline(ss, fechaHora, ',') &&
+            std::getline(ss, idStr, ',') &&
+            std::getline(ss, nombre, ',')) {
+            
+            // Si la columna "ID" está presente, intentamos extraer el ID.
+            if (idStr.find("ID:") != std::string::npos) {
+                idStr.erase(0, 4); // Eliminamos "ID: " del inicio de la cadena
+            }
+
+            int id;
+            if (Cliente::esNumeroValido(idStr, id)) {
+                if (id == nuevoID) {
+                    std::cout << "ID ya existente en el archivo. Ingrese otro ID.\n";
+                    archivo.close();
+                    return true;
+                } else {
+                    break;  // Salir del bucle interno
+                }
+            } else {
+                std::cerr << "Error: El formato del ID en el archivo no es válido.\n";
+                archivo.close();
+                return true;
+            }
+        }
+    }
+
+    archivo.close();
+
+    // No se encontró el ID en el archivo
+    return false;
+}
+
+
+
 void imprimirDepositoenregistro(double cantidad,double saldo) {
     std::ofstream archivo("registro.txt", std::ios_base::app);
     if (archivo.is_open()) {
@@ -40,7 +89,6 @@ void imprimirRetiroenregistro(double cantidad,double saldo) {
         archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
         // Escribir la información del cliente en el archivo en lugar de imprimir en la terminal
         archivo << "Retiro exitoso por un valor de: "<< cantidad <<" y su saldo actual es:" <<saldo<<"\n";
-        archivo << "-----------------------------------------------------------------------------" << "\n";
         archivo.close();  // Cerrar el archivo después de escribir
         std::cout << "Informacion de clientes guardada en 'registro.txt'.\n";
     } else {
@@ -1301,7 +1349,7 @@ void CuentaBancaria::realizarTransferencias(std::vector<Cliente*>& clientes) {
  * @brief Muestra el menú de atención al cliente y realiza operaciones según la opción seleccionada.
  * @note Para agregar cuentas o clientes, se solicita información interactivamente al usuario.
  */
-std::ofstream Cliente::archivoClientes("clientes.txt", std::ios::app);
+std::ofstream Cliente::archivoClientes("clientes.csv", std::ios::app);
 void mostrarMenuAtencion(){
 std::vector<Cliente*> clientes;
     std::string entradaID, nombre;
@@ -1324,10 +1372,11 @@ std::vector<Cliente*> clientes;
                 std::cout << "Ingrese el ID del cliente: ";
                 std::getline(std::cin, entradaID);
                 int id;
-                if (Cliente::esNumeroValido(entradaID, id)) {
-                    // Verificar si el ID ya existe
+
+                if (Cliente::esNumeroValido(entradaID, id) && !verificarIDExistente("clientes.csv", id)) {
+                    // Verificar si el ID ya existe en el vector de clientes
                     auto it = std::find_if(clientes.begin(), clientes.end(), [&id](const Cliente* cliente) {
-                        return cliente->obtenerID() == id;
+                        return cliente->id == id;
                     });
 
                     if (it != clientes.end()) {
@@ -1358,8 +1407,6 @@ std::vector<Cliente*> clientes;
                             }
                         }
                     }
-                } else {
-                    std::cout << "ID invalido. Por favor, introduzca un numero de ID valido.\n";
                 }
                 break;
             }
@@ -1374,21 +1421,18 @@ std::vector<Cliente*> clientes;
             }
             case 4: {
                 // Abrir el archivo en modo de escritura
-                std::ofstream archivo("clientes.txt", std::ios_base::trunc);
+                std::ofstream archivo("clientes.csv", std::ios_base::app);
                         if (archivo.is_open()) {
                             for (auto& cliente : clientes) {
                                 std::time_t tiempo_actual = std::time(nullptr);
                                 std::tm* tiempo_info = std::localtime(&tiempo_actual);
-
-                                archivo << "------------------------------------------------------------------------------" << "\n";
-                                archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S") << "\n";
-                                archivo << "ID: " << cliente->obtenerID() << ", Nombre: " << cliente->obtenerNombre()
+                                archivo << "Fecha y hora: " << std::put_time(tiempo_info, "%Y-%m-%d %H:%M:%S")
+                                 << ",ID: " << cliente->obtenerID() << ", Nombre: " << cliente->obtenerNombre()
                                         << ", CDPs activos: " << cliente->obtenerContadorCDPs()
                                         << ", Cuentas activas: " << cliente->obtenerContadorCuentas()
                                         << ", Prestamos Activos: " << cliente->obtenerContadorPrestamos() << "\n";
-                                archivo << "------------------------------------------------------------------------------" << "\n";
                             }
-                            std::cout << "Informacion de clientes guardada en 'clientes.txt'.\n";
+                            std::cout << "Informacion de clientes guardada en 'clientes.csv'.\n";
                         } else {
                             std::cout << "Error al abrir el archivo para escribir.\n";
                         }
