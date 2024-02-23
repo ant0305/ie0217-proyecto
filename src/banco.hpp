@@ -9,6 +9,9 @@
 #include <limits>
 #include <fstream>
 
+/**
+ * @brief Se declara la clase Cliente de manera anticipada
+ */
 class Cliente;
 
 /**
