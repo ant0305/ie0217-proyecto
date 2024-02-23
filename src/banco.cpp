@@ -1004,9 +1004,26 @@ Cliente::Cliente(int id, std::string nombre) : id(id), nombre(nombre), cuentaCol
 
 /**
  * @brief Destructor de la clase Cliente.
+ * Libera la memoria de los punteros
  * Elimina el ID del conjunto de IDs asignados cuando se destruye un cliente.
  */
 Cliente::~Cliente() {
+    if (cuentaColones != nullptr) {
+        delete cuentaColones;
+        cuentaColones = nullptr;
+    }
+    if (cuentaDolares != nullptr) {
+        delete cuentaDolares;
+        cuentaDolares = nullptr;
+    }
+    if (cdp != nullptr) {
+        delete cdp;
+        cdp = nullptr;
+    }
+    if (prestamo != nullptr) {
+        delete prestamo;
+        prestamo = nullptr;
+    }
     idsAsignados.erase(id);
 }
 
